@@ -1,11 +1,11 @@
 import logging
 
 logging.basicConfig(
-        level=logging.INFO,
+        level=logging.WARN,
         format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
 )
 
-FILENAME = 'listing_0037_single_register_mov'
+import sys
 
 def get_readable_reg(reg, width_bit):
     if reg == '000' and width_bit == '0':
@@ -41,8 +41,6 @@ def get_readable_reg(reg, width_bit):
     elif reg == '111' and width_bit == '1':
         return 'di'
 
-
-
 def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m_bits_string):
     reg_decoded = get_readable_reg(reg_bits_string, width_bit)
     r_slash_m_decoded = get_readable_reg(r_slash_m_bits_string, width_bit)
@@ -58,11 +56,6 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
 # Note: check out https://edge.edx.org/c4x/BITSPilani/EEE231/asset/8086_family_Users_Manual_1_.pdf
 # p160 or so of the PDF, where it says "Machine Instruction Encoding and Decoding"
 
-# TODO: relative path
-with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{FILENAME}', mode='r+b') as fd:
-    file_contents = fd.read()
-
-logging.info(f'file contents: {file_contents}')
 
 def parse_two_bytes(two_bytes):
     # TODO: is it pairs of bytes?
@@ -97,16 +90,24 @@ def parse_two_bytes(two_bytes):
 
     return asm
 
-lines = []
-while True:
-    if len(file_contents) == 0:
-        break
-    two_bytes = file_contents[:2]
-    file_contents = file_contents[2:]
-    asm = parse_two_bytes(two_bytes)
-    lines.append(asm)
+if __name__ == '__main__':
+    # FILENAME = 'listing_0037_single_register_mov'
+    # FILENAME = 'listing_0038_many_register_mov'
+    FILENAME = sys.argv[1]
+    # TODO: relative path
+    with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{FILENAME}', mode='r+b') as fd:
+        file_contents = fd.read()
 
-print(f'; {FILENAME} disassembly:')
-print('bits 16')
-for line in lines:
-    print(line)
+    lines = []
+    while True:
+        if len(file_contents) == 0:
+            break
+        two_bytes = file_contents[:2]
+        file_contents = file_contents[2:]
+        asm = parse_two_bytes(two_bytes)
+        lines.append(asm)
+
+    print(f'; {FILENAME} disassembly:')
+    print('bits 16')
+    for line in lines:
+        print(line)
