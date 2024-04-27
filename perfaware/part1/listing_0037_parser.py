@@ -64,35 +64,49 @@ with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{FILENAME}', 
 
 logging.info(f'file contents: {file_contents}')
 
-# TODO: is it pairs of bytes?
-# TODO: will need to iterate thru, not just do this hardcoded bit
-first_instruction = file_contents[0:2]
-first_byte = first_instruction[0]
-first_bits = bin(first_byte)[2:]
+def parse_two_bytes(two_bytes):
+    # TODO: is it pairs of bytes?
+    # TODO: will need to iterate thru, not just do this hardcoded bit
+    first_instruction = two_bytes[0:2]
+    first_byte = first_instruction[0]
+    first_bits = bin(first_byte)[2:]
 
-opcode = first_bits[0:6]
-# TODO: check this
-if opcode == '100010':
-    logging.info('this is a MOV')
-destination_bit = first_bits[6]
-logging.info(f'destination_bit: {destination_bit}')
-width_bit = first_bits[7]
-logging.info(f'width_bit: {width_bit}')
+    opcode = first_bits[0:6]
+    # TODO: check this
+    if opcode == '100010':
+        logging.info('this is a MOV')
+    destination_bit = first_bits[6]
+    logging.info(f'destination_bit: {destination_bit}')
+    width_bit = first_bits[7]
+    logging.info(f'width_bit: {width_bit}')
 
-second_byte = first_instruction[1]
-second_bits = bin(second_byte)[2:]
-logging.info(f'second_bits: {second_bits}')
-mod = second_bits[:2]
-reg = second_bits[2:5]
-r_slash_m = second_bits[5:]
-logging.info(f'mod: {mod}')
-logging.info(f'reg: {reg}')
-logging.info(f'r_slash_m: {r_slash_m}')
+    second_byte = first_instruction[1]
+    second_bits = bin(second_byte)[2:]
+    logging.info(f'second_bits: {second_bits}')
+    mod = second_bits[:2]
+    reg = second_bits[2:5]
+    r_slash_m = second_bits[5:]
+    logging.info(f'mod: {mod}')
+    logging.info(f'reg: {reg}')
+    logging.info(f'r_slash_m: {r_slash_m}')
 
-if opcode == '100010' and mod == '11':
-    logging.info('this is a register-to-register MOV')
-    asm = decode_reg_to_reg_mov(destination_bit, width_bit, reg, r_slash_m)
-    print(f'; {FILENAME} disassembly:')
-    print('bits 16')
-    print(asm)
+    if opcode == '100010' and mod == '11':
+        logging.info('this is a register-to-register MOV')
+        asm = decode_reg_to_reg_mov(destination_bit, width_bit, reg, r_slash_m)
+        logging.info(asm)
 
+    return asm
+
+lines = []
+while True:
+    if len(file_contents) == 0:
+        break
+    two_bytes = file_contents[:2]
+    file_contents = file_contents[2:]
+    asm = parse_two_bytes(two_bytes)
+    lines.append(asm)
+
+print(f'; {FILENAME} disassembly:')
+print('bits 16')
+for line in lines:
+    print(line)
