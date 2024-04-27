@@ -9,37 +9,37 @@ FILENAME = 'listing_0037_single_register_mov'
 
 def get_readable_reg(reg, width_bit):
     if reg == '000' and width_bit == '0':
-        return 'AL'
+        return 'al'
     elif reg == '000' and width_bit == '1':
-        return 'AX'
+        return 'ax'
     elif reg == '001' and width_bit == '0':
-        return 'CL'
+        return 'cl'
     elif reg == '001' and width_bit == '1':
-        return 'CX'
+        return 'cx'
     elif reg == '010' and width_bit == '0':
-        return 'DL'
+        return 'dl'
     elif reg == '010' and width_bit == '1':
-        return 'DX'
+        return 'dx'
     elif reg == '011' and width_bit == '0':
-        return 'BL'
+        return 'bl'
     elif reg == '011' and width_bit == '1':
-        return 'BX'
+        return 'bx'
     elif reg == '100' and width_bit == '0':
-        return 'AH'
+        return 'ah'
     elif reg == '100' and width_bit == '1':
-        return 'SP'
+        return 'sp'
     elif reg == '101' and width_bit == '0':
-        return 'CH'
+        return 'ch'
     elif reg == '101' and width_bit == '1':
-        return 'BP'
+        return 'bp'
     elif reg == '110' and width_bit == '0':
-        return 'DH'
+        return 'dh'
     elif reg == '110' and width_bit == '1':
-        return 'SI'
+        return 'si'
     elif reg == '111' and width_bit == '0':
-        return 'BH'
+        return 'bh'
     elif reg == '111' and width_bit == '1':
-        return 'DI'
+        return 'di'
 
 
 
@@ -52,7 +52,7 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
     elif destination_bit == '0':
         first_token = r_slash_m_decoded
         second_token = reg_decoded
-    asm_string = f'MOV {first_token}, {second_token}'
+    asm_string = f'mov {first_token}, {second_token}'
     return asm_string
 
 # Note: check out https://edge.edx.org/c4x/BITSPilani/EEE231/asset/8086_family_Users_Manual_1_.pdf
