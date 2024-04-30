@@ -90,6 +90,9 @@ def parse_two_bytes(two_bytes):
 
     return asm
 
+def get_more_bytes_needed(two_bytes):
+    pass
+
 if __name__ == '__main__':
     # FILENAME = 'listing_0037_single_register_mov'
     # FILENAME = 'listing_0038_many_register_mov'
@@ -99,15 +102,28 @@ if __name__ == '__main__':
         file_contents = fd.read()
 
     lines = []
+#     while True:
+#         if len(file_contents) == 0:
+#             break
+#         two_bytes = file_contents[:2]
+#         file_contents = file_contents[2:]
+#         asm = parse_two_bytes(two_bytes)
+#         lines.append(asm)
     while True:
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]
         file_contents = file_contents[2:]
-        asm = parse_two_bytes(two_bytes)
+        more_bytes_needed = get_more_bytes_needed(two_bytes)
+        remaining_bytes = file_contents[:more_bytes_needed]
+        file_contents = file_contents[more_bytes_needed:]
+        asm = parse_next_group(two_bytes + remaining_bytes)
+        # asm = parse_two_bytes(two_bytes)
         lines.append(asm)
 
     print(f'; {FILENAME} disassembly:')
     print('bits 16')
     for line in lines:
         print(line)
+
+
