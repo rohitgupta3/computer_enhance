@@ -1,3 +1,5 @@
+# Note: check out https://edge.edx.org/c4x/BITSPilani/EEE231/asset/8086_family_Users_Manual_1_.pdf
+# p160 or so of the PDF, where it says "Machine Instruction Encoding and Decoding"
 import logging
 
 logging.basicConfig(
@@ -6,6 +8,7 @@ logging.basicConfig(
 )
 
 import sys
+
 
 def get_readable_reg(reg, width_bit):
     if reg == '000' and width_bit == '0':
@@ -41,6 +44,7 @@ def get_readable_reg(reg, width_bit):
     elif reg == '111' and width_bit == '1':
         return 'di'
 
+
 def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m_bits_string):
     reg_decoded = get_readable_reg(reg_bits_string, width_bit)
     r_slash_m_decoded = get_readable_reg(r_slash_m_bits_string, width_bit)
@@ -53,19 +57,12 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
     asm_string = f'mov {first_token}, {second_token}'
     return asm_string
 
-# Note: check out https://edge.edx.org/c4x/BITSPilani/EEE231/asset/8086_family_Users_Manual_1_.pdf
-# p160 or so of the PDF, where it says "Machine Instruction Encoding and Decoding"
-
 
 def parse_two_bytes(two_bytes):
-    # TODO: is it pairs of bytes?
-    # TODO: will need to iterate thru, not just do this hardcoded bit
-    first_instruction = two_bytes[0:2]
-    first_byte = first_instruction[0]
+    first_byte = two_bytes[0]
     first_bits = bin(first_byte)[2:]
 
     opcode = first_bits[0:6]
-    # TODO: check this
     if opcode == '100010':
         logging.info('this is a MOV')
     destination_bit = first_bits[6]
@@ -73,7 +70,7 @@ def parse_two_bytes(two_bytes):
     width_bit = first_bits[7]
     logging.info(f'width_bit: {width_bit}')
 
-    second_byte = first_instruction[1]
+    second_byte = two_bytes[1]
     second_bits = bin(second_byte)[2:]
     logging.info(f'second_bits: {second_bits}')
     mod = second_bits[:2]
@@ -91,6 +88,7 @@ def parse_two_bytes(two_bytes):
     return asm
 
 def get_more_bytes_needed(two_bytes):
+    opcode
     pass
 
 if __name__ == '__main__':
