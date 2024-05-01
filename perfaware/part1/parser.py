@@ -95,15 +95,9 @@ def parse_100010(some_bytes):
         logging.info('this is a register-to-register mov')
         asm = decode_reg_to_reg_mov(destination_bit, width_bit, reg, r_slash_m)
         logging.info(asm)
-    elif mod == '10':
-        logging.info('this is memory mov with 16-bit displacement')
+    else:
+        logging.info('this is memory mov')
         asm = decode_memory_mov(destination_bit, width_bit, reg, r_slash_m, some_bytes[1:])
-    elif mod == '01':
-        logging.info('this is memory mov with 8-bit displacement')
-        asm = decode_memory_mov_8_bit_disp(destination_bit, width_bit, reg, r_slash_m, some_bytes[1:])
-    elif mod == '00':
-        logging.info('this is memory mov with no displacement*')
-        asm = decode_memory_mov_no_disp(destination_bit, width_bit, reg, r_slash_m, some_bytes[1:])
 
     return asm
 
