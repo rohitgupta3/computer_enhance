@@ -88,7 +88,22 @@ def parse_two_bytes(two_bytes):
     return asm
 
 def get_more_bytes_needed_100010(two_bytes):
-    pass
+    second_byte = two_bytes[1]
+    second_bits = bin(second_byte)[2:]
+    logging.info(f'second_bits: {second_bits}')
+    mod = second_bits[:2]
+    if mod == '11':
+        return 0
+    elif mod == '10':
+        return 2
+    elif mod == '01':
+        return 1
+    elif mod == '00':
+        r_slash_m = second_bits[5:]
+        if r_slash_m == '110':
+            return 2
+        else:
+            return 0
 
 def get_more_bytes_needed(two_bytes):
     first_byte = two_bytes[0]
