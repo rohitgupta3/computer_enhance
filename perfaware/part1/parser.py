@@ -116,24 +116,32 @@ def get_int_string_displacement(displacement_bytes):
 
 
 def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
+    if r_slash_m_bits_string == '000':
+        core_string = 'bx + si'
+    if r_slash_m_bits_string == '001':
+        core_string = 'bx + di'
+    if r_slash_m_bits_string == '010':
+        core_string = 'bp + si'
+    if r_slash_m_bits_string == '011':
+        core_string = 'bp + di'
+    if r_slash_m_bits_string == '100':
+        core_string = 'si'
+    if r_slash_m_bits_string == '101':
+        core_string = 'di'
+    if r_slash_m_bits_string == '110' and mod != '00':
+        core_string = 'bp'
+    if r_slash_m_bits_string == '111':
+        core_string = 'bx'
+
+    if r_slash_m_bits_string == '110' and mod == '00':
+        # TODO
+        raise NotImplementedError
+
+    if mod == '00':
+        return f'[{core_string}]'
+
     int_string_displacement = get_int_string_displacement(displacement_bytes)
-    if mod == '10' and r_slash_m_bits_string == '000':
-        return f'[bx + si + {int_string_displacement}]'
-    if mod == '10' and r_slash_m_bits_string == '001':
-        return f'[bx + di + {int_string_displacement}]'
-    if mod == '10' and r_slash_m_bits_string == '010':
-        return f'[bp + si + {int_string_displacement}]'
-    if mod == '10' and r_slash_m_bits_string == '011':
-        return f'[bp + di + {int_string_displacement}]'
-    if mod == '10' and r_slash_m_bits_string == '100':
-        return f'[si + {int_string_displacement}]'
-    if mod == '10' and r_slash_m_bits_string == '101':
-        return f'[di + {int_string_displacement}]'
-    if mod == '10' and r_slash_m_bits_string == '110':
-        return f'[bp + {int_string_displacement}]'
-    if mod == '10' and r_slash_m_bits_string == '111':
-        return f'[bx + {int_string_displacement}]'
-    # TODO: finish for mod '01' and mod '00'
+    return f'[{core_string} + {int_string_displacement}]'
 
 def decode_memory_mov_16_bit_disp(
     destination_bit,
@@ -143,7 +151,11 @@ def decode_memory_mov_16_bit_disp(
     displacement_bytes
 ):
     reg_decoded = get_readable_reg(reg_bits_string, width_bit)
-    r_slash_m_decoded = get_readable_eff_add(r_slash_m_bits_string, mod='10', displacement_bytes)
+    r_slash_m_decoded = get_readable_eff_add(
+            r_slash_m_bits_string,
+            mod='10',
+            displacement_bytes
+    )
 
 
 def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m_bits_string):
