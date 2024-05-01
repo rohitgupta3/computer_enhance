@@ -129,13 +129,6 @@ if __name__ == '__main__':
         file_contents = fd.read()
 
     lines = []
-#     while True:
-#         if len(file_contents) == 0:
-#             break
-#         two_bytes = file_contents[:2]
-#         file_contents = file_contents[2:]
-#         asm = parse_two_bytes(two_bytes)
-#         lines.append(asm)
     while True:
         if len(file_contents) == 0:
             break
