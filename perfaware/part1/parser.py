@@ -97,7 +97,7 @@ def parse_100010(some_bytes):
         logging.info(asm)
     elif mod == '10':
         logging.info('this is memory mov with 16-bit displacement')
-        asm = decode_memory_mov_16_bit_disp(destination_bit, width_bit, reg, r_slash_m, some_bytes[1:])
+        asm = decode_memory_mov(destination_bit, width_bit, reg, r_slash_m, some_bytes[1:])
     elif mod == '01':
         logging.info('this is memory mov with 8-bit displacement')
         asm = decode_memory_mov_8_bit_disp(destination_bit, width_bit, reg, r_slash_m, some_bytes[1:])
@@ -143,7 +143,8 @@ def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
     int_string_displacement = get_int_string_displacement(displacement_bytes)
     return f'[{core_string} + {int_string_displacement}]'
 
-def decode_memory_mov_16_bit_disp(
+
+def decode_memory_mov(
     destination_bit,
     width_bit,
     reg_bits_string,
@@ -156,6 +157,15 @@ def decode_memory_mov_16_bit_disp(
             mod='10',
             displacement_bytes
     )
+    # TODO: DRY with `decode_reg_to_reg_mov`?
+    if destination_bit == '1':
+        first_token = reg_decoded
+        second_token = r_slash_m_decoded
+    elif destination_bit == '0':
+        first_token = r_slash_m_decoded
+        second_token = reg_decoded
+    asm_string = f'mov {first_token}, {second_token}'
+    return asm_string
 
 
 def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m_bits_string):
