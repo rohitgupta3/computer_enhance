@@ -64,7 +64,7 @@ def parse_two_bytes(two_bytes):
 
     opcode = first_bits[0:6]
     if opcode == '100010':
-        logging.info('this is a MOV')
+        logging.info('this is a register-to-register or memory-to-register or register-to-memory MOV')
     destination_bit = first_bits[6]
     logging.info(f'destination_bit: {destination_bit}')
     width_bit = first_bits[7]
@@ -87,9 +87,23 @@ def parse_two_bytes(two_bytes):
 
     return asm
 
-def get_more_bytes_needed(two_bytes):
-    opcode
+def get_more_bytes_needed_100010(two_bytes):
     pass
+
+def get_more_bytes_needed(two_bytes):
+    first_byte = two_bytes[0]
+    first_bits = bin(first_byte)[2:]
+
+    if first_bits[0:6] == '100010':
+        logging.info('this is a register-to-register or memory-to-register or register-to-memory MOV')
+        # TODO: don't love the naming
+        return get_more_bytes_needed_100010(two_bytes)
+    elif first_bits[0:4] == '1011':
+        logging.info('this is an immediate-to-register mov')
+        return get_more_bytes_needed_1011(two_bytes)
+    else:
+        raise ValueError(f'{two_bytes} not supported')
+
 
 if __name__ == '__main__':
     # FILENAME = 'listing_0037_single_register_mov'
