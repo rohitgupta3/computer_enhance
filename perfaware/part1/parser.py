@@ -226,11 +226,7 @@ def parse_next_group(some_bytes):
 
     pass
 
-def decode_machine_code(filename):
-    # TODO: relative path
-    with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{filename}', mode='r+b') as fd:
-        file_contents = fd.read()
-
+def decode_machine_code(file_contents):
     lines = []
     while True:
         if len(file_contents) == 0:
@@ -252,12 +248,18 @@ def decode_machine_code(filename):
 
     return lines
 
+def decode_executable(filename):
+    # TODO: relative path
+    with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{filename}', mode='r+b') as fd:
+        file_contents = fd.read()
+    return decode_machine_code(file_contents)
+
 
 if __name__ == '__main__':
     # FILENAME = 'listing_0037_single_register_mov'
     # FILENAME = 'listing_0038_many_register_mov'
     FILENAME = sys.argv[1]
-    lines = decode_machine_code(FILENAME)
+    lines = decode_executable(FILENAME)
     for line in lines:
         print(line)
 
