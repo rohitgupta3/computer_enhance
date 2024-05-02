@@ -149,7 +149,7 @@ def decode_memory_mov(
     r_slash_m_decoded = get_readable_eff_add(
             r_slash_m_bits_string,
             mod='10',
-            displacement_bytes
+            displacement_bytes=displacement_bytes
     )
     # TODO: DRY with `decode_reg_to_reg_mov`?
     if destination_bit == '1':
