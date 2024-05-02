@@ -211,7 +211,7 @@ def parse_1011(some_bytes):
 
 # TODO: could DRY with `get_more_bytes_needed` / re-architect generally
 def parse_next_group(some_bytes):
-    first_byte = two_bytes[0]
+    first_byte = some_bytes[0]
     first_bits = bin(first_byte)[2:]
 
     if first_bits[0:6] == '100010':
@@ -226,13 +226,9 @@ def parse_next_group(some_bytes):
 
     pass
 
-
-if __name__ == '__main__':
-    # FILENAME = 'listing_0037_single_register_mov'
-    # FILENAME = 'listing_0038_many_register_mov'
-    FILENAME = sys.argv[1]
+def decode_machine_code(filename):
     # TODO: relative path
-    with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{FILENAME}', mode='r+b') as fd:
+    with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{filename}', mode='r+b') as fd:
         file_contents = fd.read()
 
     lines = []
@@ -248,8 +244,20 @@ if __name__ == '__main__':
         # asm = parse_two_bytes(two_bytes)
         lines.append(asm)
 
-    print(f'; {FILENAME} disassembly:')
-    print('bits 16')
+    lines = [
+        f'; {FILENAME} disassembly:',
+        'bits 16',
+        *lines
+    ]
+
+    return lines
+
+
+if __name__ == '__main__':
+    # FILENAME = 'listing_0037_single_register_mov'
+    # FILENAME = 'listing_0038_many_register_mov'
+    FILENAME = sys.argv[1]
+    lines = decode_machine_code(FILENAME)
     for line in lines:
         print(line)
 
