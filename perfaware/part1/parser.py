@@ -240,19 +240,20 @@ def decode_machine_code(file_contents):
         # asm = parse_two_bytes(two_bytes)
         lines.append(asm)
 
-    lines = [
-        f'; {FILENAME} disassembly:',
-        'bits 16',
-        *lines
-    ]
-
     return lines
 
 def decode_executable(filename):
     # TODO: relative path
     with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{filename}', mode='r+b') as fd:
         file_contents = fd.read()
-    return decode_machine_code(file_contents)
+
+    lines = decode_machine_code(file_contents)
+    lines = [
+        f'; {filename} disassembly:',
+        'bits 16',
+        *lines
+    ]
+    return lines
 
 
 if __name__ == '__main__':
