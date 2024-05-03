@@ -5,8 +5,9 @@ import os
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'test_artifacts')
 
-def test_listing_0037():
-    MACHINE_CODE_FILENAME = 'listing_0037_single_register_mov'
+def test():
+    # MACHINE_CODE_FILENAME = 'listing_0037_single_register_mov'
+    MACHINE_CODE_FILENAME = 'listing_0038_many_register_mov'
 
     lines = parser.decode_executable(MACHINE_CODE_FILENAME)
     print(f'Disassembled 0037: {lines}')
@@ -32,9 +33,4 @@ def test_listing_0037():
         original_contents = original_executable.read()
         assert reconstructed_contents != original_contents
 
-def test_listing_0038():
-    lines = parser.decode_executable('listing_0038_many_register_mov')
-    print(lines)
-
-test_listing_0037()
-
+test()
