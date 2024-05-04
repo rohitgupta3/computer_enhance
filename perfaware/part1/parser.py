@@ -105,7 +105,7 @@ def get_more_bytes_needed_1011(two_bytes):
     # reg_decoded = get_readable_reg(reg, width_bit)
     # register_size_bytes = get_size_of_reg_in_bytes(reg_decoded)
     # return register_size_bytes
-    return 2 if width_bit == '1' else 1
+    return 1 if width_bit == '1' else 0
 
 def get_more_bytes_needed(two_bytes):
     first_byte = two_bytes[0]
@@ -196,7 +196,8 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
 
 
 def parse_1011(some_bytes):
-    pass
+    breakpoint()
+    return 'this is wrong'
 
 
 # TODO: could DRY with `get_more_bytes_needed` / re-architect generally
@@ -214,7 +215,6 @@ def parse_next_group(some_bytes):
     else:
         raise ValueError(f'{two_bytes} not supported')
 
-    pass
 
 def decode_machine_code(file_contents):
     lines = []
