@@ -44,6 +44,9 @@ def get_readable_reg(reg, width_bit):
     elif reg == '111' and width_bit == '1':
         return 'di'
 
+###########
+# opcode starts with 100010
+###########
 
 def get_more_bytes_needed_100010(two_bytes):
     second_byte = two_bytes[1]
@@ -62,21 +65,6 @@ def get_more_bytes_needed_100010(two_bytes):
             return 2
         else:
             return 0
-
-
-def get_more_bytes_needed(two_bytes):
-    first_byte = two_bytes[0]
-    first_bits = bin(first_byte)[2:]
-
-    if first_bits[0:6] == '100010':
-        logging.info('this is a register-to-register or memory-to-register or register-to-memory mov')
-        # TODO: don't love the naming
-        return get_more_bytes_needed_100010(two_bytes)
-    elif first_bits[0:4] == '1011':
-        logging.info('this is an immediate-to-register mov')
-        return get_more_bytes_needed_1011(two_bytes)
-    else:
-        raise ValueError(f'{two_bytes} not supported')
 
 
 def parse_100010(some_bytes):
@@ -100,6 +88,21 @@ def parse_100010(some_bytes):
         asm = decode_memory_mov(destination_bit, width_bit, reg, r_slash_m, some_bytes[1:])
 
     return asm
+
+
+def get_more_bytes_needed(two_bytes):
+    first_byte = two_bytes[0]
+    first_bits = bin(first_byte)[2:]
+
+    if first_bits[0:6] == '100010':
+        logging.info('this is a register-to-register or memory-to-register or register-to-memory mov')
+        # TODO: don't love the naming
+        return get_more_bytes_needed_100010(two_bytes)
+    elif first_bits[0:4] == '1011':
+        logging.info('this is an immediate-to-register mov')
+        return get_more_bytes_needed_1011(two_bytes)
+    else:
+        raise ValueError(f'{two_bytes} not supported')
 
 
 def get_int_string_displacement(displacement_bytes):
@@ -173,36 +176,6 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
         second_token = reg_decoded
     asm_string = f'mov {first_token}, {second_token}'
     return asm_string
-
-
-# def parse_two_bytes(two_bytes):
-#     first_byte = two_bytes[0]
-#     first_bits = bin(first_byte)[2:]
-#
-#     opcode = first_bits[0:6]
-#     if opcode == '100010':
-#         logging.info('this is a register-to-register or memory-to-register or register-to-memory mov')
-#     destination_bit = first_bits[6]
-#     logging.info(f'destination_bit: {destination_bit}')
-#     width_bit = first_bits[7]
-#     logging.info(f'width_bit: {width_bit}')
-#
-#     second_byte = two_bytes[1]
-#     second_bits = bin(second_byte)[2:]
-#     logging.info(f'second_bits: {second_bits}')
-#     mod = second_bits[:2]
-#     reg = second_bits[2:5]
-#     r_slash_m = second_bits[5:]
-#     logging.info(f'mod: {mod}')
-#     logging.info(f'reg: {reg}')
-#     logging.info(f'r_slash_m: {r_slash_m}')
-#
-#     if opcode == '100010' and mod == '11':
-#         logging.info('this is a register-to-register mov')
-#         asm = decode_reg_to_reg_mov(destination_bit, width_bit, reg, r_slash_m)
-#         logging.info(asm)
-#
-#     return asm
 
 
 def parse_1011(some_bytes):
