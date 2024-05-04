@@ -96,17 +96,6 @@ def parse_100010(some_bytes):
 
     return asm
 
-def get_more_bytes_needed_1011(two_bytes):
-    first_byte = two_bytes[0]
-    first_bits = bin(first_byte)[2:]
-    logging.info(f'first_bits: {first_bits}')
-    width_bit = first_bits[4]
-    # reg = first_bits[5:]
-    # reg_decoded = get_readable_reg(reg, width_bit)
-    # register_size_bytes = get_size_of_reg_in_bytes(reg_decoded)
-    # return register_size_bytes
-    return 1 if width_bit == '1' else 0
-
 def get_more_bytes_needed(two_bytes):
     first_byte = two_bytes[0]
     first_bits = bin(first_byte)[2:]
@@ -195,9 +184,28 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
     return asm_string
 
 
+def get_more_bytes_needed_1011(two_bytes):
+    first_byte = two_bytes[0]
+    first_bits = bin(first_byte)[2:]
+    logging.info(f'first_bits: {first_bits}')
+    width_bit = first_bits[4]
+    # reg = first_bits[5:]
+    # reg_decoded = get_readable_reg(reg, width_bit)
+    # register_size_bytes = get_size_of_reg_in_bytes(reg_decoded)
+    # return register_size_bytes
+    return 1 if width_bit == '1' else 0
+
+# TODO: could DRY with `get_more_bytes_needed_1011`
 def parse_1011(some_bytes):
-    breakpoint()
-    return 'this is wrong'
+    first_byte = some_bytes[0]
+    first_bits = bin(first_byte)[2:]
+    logging.info(f'first_bits: {first_bits}')
+    width_bit = first_bits[4]
+    reg = first_bits[5:]
+    reg_decoded = get_readable_reg(reg, width_bit)
+    int_string_displacement = get_int_string_displacement(some_bytes[1:])
+    # breakpoint()
+    return f'mov {reg}, {int_string_displacement}'
 
 
 # TODO: could DRY with `get_more_bytes_needed` / re-architect generally
