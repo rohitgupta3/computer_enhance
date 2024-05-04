@@ -229,6 +229,7 @@ def parse_next_group(some_bytes):
 def decode_machine_code(file_contents):
     lines = []
     while True:
+        print('top o\' the loop')
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]
@@ -237,6 +238,7 @@ def decode_machine_code(file_contents):
         remaining_bytes = file_contents[:more_bytes_needed]
         file_contents = file_contents[more_bytes_needed:]
         asm = parse_next_group(two_bytes + remaining_bytes)
+        print(f'asm: {asm}')
         # asm = parse_two_bytes(two_bytes)
         lines.append(asm)
 
@@ -259,8 +261,8 @@ def decode_executable(filename):
 if __name__ == '__main__':
     # FILENAME = 'listing_0037_single_register_mov'
     # FILENAME = 'listing_0038_many_register_mov'
+    # FILENAME = 'listing_0039_more_movs'
     FILENAME = sys.argv[1]
     lines = decode_executable(FILENAME)
     for line in lines:
         print(line)
-
