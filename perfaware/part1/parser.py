@@ -114,8 +114,8 @@ def get_more_bytes_needed(two_bytes):
 
 
 def get_int_string_displacement(displacement_bytes):
-    # TODO: using default (big) endianness; confirm
-    int_value_i: int = int.from_bytes(displacement_bytes)
+    # int_value_i: int = int.from_bytes(displacement_bytes)
+    int_value_i: int = int.from_bytes(displacement_bytes, byteorder='little')
     int_value_s: str = str(int_value_i)
     return int_value_s
 
