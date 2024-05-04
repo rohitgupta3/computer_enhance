@@ -175,34 +175,34 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
     return asm_string
 
 
-def parse_two_bytes(two_bytes):
-    first_byte = two_bytes[0]
-    first_bits = bin(first_byte)[2:]
-
-    opcode = first_bits[0:6]
-    if opcode == '100010':
-        logging.info('this is a register-to-register or memory-to-register or register-to-memory mov')
-    destination_bit = first_bits[6]
-    logging.info(f'destination_bit: {destination_bit}')
-    width_bit = first_bits[7]
-    logging.info(f'width_bit: {width_bit}')
-
-    second_byte = two_bytes[1]
-    second_bits = bin(second_byte)[2:]
-    logging.info(f'second_bits: {second_bits}')
-    mod = second_bits[:2]
-    reg = second_bits[2:5]
-    r_slash_m = second_bits[5:]
-    logging.info(f'mod: {mod}')
-    logging.info(f'reg: {reg}')
-    logging.info(f'r_slash_m: {r_slash_m}')
-
-    if opcode == '100010' and mod == '11':
-        logging.info('this is a register-to-register mov')
-        asm = decode_reg_to_reg_mov(destination_bit, width_bit, reg, r_slash_m)
-        logging.info(asm)
-
-    return asm
+# def parse_two_bytes(two_bytes):
+#     first_byte = two_bytes[0]
+#     first_bits = bin(first_byte)[2:]
+#
+#     opcode = first_bits[0:6]
+#     if opcode == '100010':
+#         logging.info('this is a register-to-register or memory-to-register or register-to-memory mov')
+#     destination_bit = first_bits[6]
+#     logging.info(f'destination_bit: {destination_bit}')
+#     width_bit = first_bits[7]
+#     logging.info(f'width_bit: {width_bit}')
+#
+#     second_byte = two_bytes[1]
+#     second_bits = bin(second_byte)[2:]
+#     logging.info(f'second_bits: {second_bits}')
+#     mod = second_bits[:2]
+#     reg = second_bits[2:5]
+#     r_slash_m = second_bits[5:]
+#     logging.info(f'mod: {mod}')
+#     logging.info(f'reg: {reg}')
+#     logging.info(f'r_slash_m: {r_slash_m}')
+#
+#     if opcode == '100010' and mod == '11':
+#         logging.info('this is a register-to-register mov')
+#         asm = decode_reg_to_reg_mov(destination_bit, width_bit, reg, r_slash_m)
+#         logging.info(asm)
+#
+#     return asm
 
 
 def parse_1011(some_bytes):
