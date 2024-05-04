@@ -51,12 +51,6 @@ def get_readable_reg(reg, width_bit):
     elif reg == '111' and width_bit == '1':
         return 'di'
 
-# def get_size_of_reg_in_bytes(reg_decoded):
-#     eight_bit_registers = ['al', 'bl', 'cl', 'dl', 'ah', 'bh', 'ch', 'dh']
-#     if reg_decoded in eight_bit_registers:
-#         return 1
-#     else:
-#         return 2
 
 ###########
 # opcode starts with 100010
