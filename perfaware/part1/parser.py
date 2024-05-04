@@ -3,7 +3,7 @@
 import logging
 
 logging.basicConfig(
-        level=logging.WARN,
+        level=logging.INFO,
         format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
 )
 

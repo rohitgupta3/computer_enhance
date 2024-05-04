@@ -1,3 +1,10 @@
+import logging
+
+logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
+)
+
 import parser
 import tempfile
 import subprocess
@@ -7,12 +14,12 @@ TEST_DIR = os.path.join(os.path.dirname(__file__), 'test_artifacts')
 
 def test(filename):
     lines = parser.decode_executable(filename)
-    print(f'Disassembled {filename}: {lines}')
+    logging.info(f'Disassembled {filename}: {lines}')
 
     with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.asm', dir=TEST_DIR) as tmp:
         tmp.write("\n".join(lines))
         asm_path = tmp.name
-    print(f'Wrote {filename} asm to {asm_path}')
+    logging.info(f'Wrote {filename} asm to {asm_path}')
 
     executable_path = tempfile.mktemp(dir=TEST_DIR)
     nasm_cmd = [
@@ -22,7 +29,7 @@ def test(filename):
         executable_path
     ]
     subprocess.run(nasm_cmd, check=True)
-    print(f'Assembled disassembled {filename} asm to {executable_path}')
+    logging.info(f'Assembled disassembled {filename} asm to {executable_path}')
 
     with open(executable_path, mode='r+b') as reconstructed_executable, \
         open(filename, mode='r+b') as original_executable:
@@ -31,6 +38,6 @@ def test(filename):
         assert reconstructed_contents == original_contents
 
 
-# test('listing_0037_single_register_mov')
-# test('listing_0038_many_register_mov')
-test('listing_0039_more_movs')
+test('listing_0037_single_register_mov')
+test('listing_0038_many_register_mov')
+# test('listing_0039_more_movs')
