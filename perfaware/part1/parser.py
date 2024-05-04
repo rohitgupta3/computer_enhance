@@ -84,12 +84,12 @@ def get_more_bytes_needed_100010(two_bytes):
 
 def parse_100010(some_bytes):
     first_byte = some_bytes[0]
-    first_bits = bin(first_byte)[2:]
+    first_bits = byte_to_bitstring(first_byte)
     destination_bit = first_bits[6]
     width_bit = first_bits[7]
 
     second_byte = some_bytes[1]
-    second_bits = bin(second_byte)[2:]
+    second_bits = byte_to_bitstring(second_byte)
     mod = second_bits[:2]
     reg = second_bits[2:5]
     r_slash_m = second_bits[5:]
@@ -106,7 +106,7 @@ def parse_100010(some_bytes):
 
 def get_more_bytes_needed(two_bytes):
     first_byte = two_bytes[0]
-    first_bits = bin(first_byte)[2:]
+    first_bits = byte_to_bitstring(first_byte)
 
     if first_bits[0:6] == '100010':
         logging.debug('this is a register-to-register or memory-to-register or register-to-memory mov')
@@ -194,7 +194,7 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
 
 def get_more_bytes_needed_1011(two_bytes):
     first_byte = two_bytes[0]
-    first_bits = bin(first_byte)[2:]
+    first_bits = byte_to_bitstring(first_byte)
     logging.debug(f'first_bits: {first_bits}')
     width_bit = first_bits[4]
     # reg = first_bits[5:]
@@ -206,7 +206,7 @@ def get_more_bytes_needed_1011(two_bytes):
 # TODO: could DRY with `get_more_bytes_needed_1011`
 def parse_1011(some_bytes):
     first_byte = some_bytes[0]
-    first_bits = bin(first_byte)[2:]
+    first_bits = byte_to_bitstring(first_byte)
     logging.debug(f'first_bits: {first_bits}')
     width_bit = first_bits[4]
     reg = first_bits[5:]
@@ -218,7 +218,7 @@ def parse_1011(some_bytes):
 # TODO: could DRY with `get_more_bytes_needed` / re-architect generally
 def parse_next_group(some_bytes):
     first_byte = some_bytes[0]
-    first_bits = bin(first_byte)[2:]
+    first_bits = byte_to_bitstring(first_byte)
 
     if first_bits[0:6] == '100010':
         logging.debug('this is a register-to-register or memory-to-register or register-to-memory mov')
@@ -234,7 +234,7 @@ def parse_next_group(some_bytes):
 def decode_machine_code(file_contents):
     lines = []
     while True:
-        breakpoint()
+        # breakpoint()
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]
