@@ -44,6 +44,13 @@ def get_readable_reg(reg, width_bit):
     elif reg == '111' and width_bit == '1':
         return 'di'
 
+# def get_size_of_reg_in_bytes(reg_decoded):
+#     eight_bit_registers = ['al', 'bl', 'cl', 'dl', 'ah', 'bh', 'ch', 'dh']
+#     if reg_decoded in eight_bit_registers:
+#         return 1
+#     else:
+#         return 2
+
 ###########
 # opcode starts with 100010
 ###########
@@ -89,6 +96,16 @@ def parse_100010(some_bytes):
 
     return asm
 
+def get_more_bytes_needed_1011(two_bytes):
+    first_byte = two_bytes[0]
+    first_bits = bin(first_byte)[2:]
+    logging.info(f'first_bits: {first_bits}')
+    width_bit = first_bits[4]
+    # reg = first_bits[5:]
+    # reg_decoded = get_readable_reg(reg, width_bit)
+    # register_size_bytes = get_size_of_reg_in_bytes(reg_decoded)
+    # return register_size_bytes
+    return 2 if width_bit == '1' else 1
 
 def get_more_bytes_needed(two_bytes):
     first_byte = two_bytes[0]
