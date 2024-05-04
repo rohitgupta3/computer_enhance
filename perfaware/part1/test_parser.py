@@ -31,6 +31,6 @@ def test():
         open(MACHINE_CODE_FILENAME, mode='r+b') as original_executable:
         reconstructed_contents = reconstructed_executable.read()
         original_contents = original_executable.read()
-        assert reconstructed_contents != original_contents
+        assert reconstructed_contents == original_contents
 
 test()
