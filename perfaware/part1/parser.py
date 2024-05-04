@@ -234,7 +234,7 @@ def parse_next_group(some_bytes):
 def decode_machine_code(file_contents):
     lines = []
     while True:
-        # breakpoint()
+        breakpoint()
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]
@@ -244,7 +244,6 @@ def decode_machine_code(file_contents):
         file_contents = file_contents[more_bytes_needed:]
         asm = parse_next_group(two_bytes + remaining_bytes)
         logging.info(f'asm: {asm}')
-        # asm = parse_two_bytes(two_bytes)
         lines.append(asm)
 
     return lines
