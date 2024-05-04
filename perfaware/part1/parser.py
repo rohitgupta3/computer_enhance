@@ -205,7 +205,7 @@ def parse_1011(some_bytes):
     reg_decoded = get_readable_reg(reg, width_bit)
     int_string_displacement = get_int_string_displacement(some_bytes[1:])
     # breakpoint()
-    return f'mov {reg}, {int_string_displacement}'
+    return f'mov {reg_decoded}, {int_string_displacement}'
 
 
 # TODO: could DRY with `get_more_bytes_needed` / re-architect generally
