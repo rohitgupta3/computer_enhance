@@ -112,8 +112,7 @@ def get_more_bytes_needed(two_bytes):
         raise ValueError(f'{two_bytes} not supported')
 
 
-def get_int_string_displacement(displacement_bytes):
-    # int_value_i: int = int.from_bytes(displacement_bytes)
+def get_int_string_from_bytes(displacement_bytes):
     int_value_i: int = int.from_bytes(displacement_bytes, byteorder='little')
     int_value_s: str = str(int_value_i)
     return int_value_s
@@ -140,7 +139,7 @@ def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
     if mod == '00':
         return f'[{core_string}]'
 
-    int_string_displacement = get_int_string_displacement(displacement_bytes)
+    int_string_displacement = get_int_string_from_bytes(displacement_bytes)
 
     if r_slash_m_bits_string == '110' and mod == '00':
         return f'[{int_string_displacement}]'
@@ -208,8 +207,8 @@ def parse_1011(some_bytes):
     width_bit = first_bits[4]
     reg = first_bits[5:]
     reg_decoded = get_readable_reg(reg, width_bit)
-    int_string_displacement = get_int_string_displacement(some_bytes[1:])
-    return f'mov {reg_decoded}, {int_string_displacement}'
+    immediate_s = get_int_string_from_bytes(some_bytes[1:])
+    return f'mov {reg_decoded}, {immediate_s}'
 
 
 # TODO: could DRY with `get_more_bytes_needed` / re-architect generally
