@@ -228,7 +228,6 @@ def parse_next_group(some_bytes):
 def decode_machine_code(file_contents):
     lines = []
     while True:
-        # breakpoint()
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]
