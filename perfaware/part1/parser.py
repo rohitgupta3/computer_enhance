@@ -9,7 +9,6 @@ logging.basicConfig(
 
 import sys
 
-
 def byte_to_bitstring(some_int):
     """ e.g.
     some_int = some_bytes[0]
@@ -94,7 +93,7 @@ def parse_100010(some_bytes):
         logging.debug(asm)
     else:
         logging.debug('this is memory mov')
-        asm = decode_memory_mov(destination_bit, width_bit, reg, r_slash_m, some_bytes[1:])
+        asm = decode_memory_mov(destination_bit, width_bit, reg, r_slash_m, mod, some_bytes[2:])
 
     return asm
 
@@ -138,14 +137,14 @@ def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
     if r_slash_m_bits_string == '111':
         core_string = 'bx'
 
-    if r_slash_m_bits_string == '110' and mod == '00':
-        # TODO
-        raise NotImplementedError
-
     if mod == '00':
         return f'[{core_string}]'
 
     int_string_displacement = get_int_string_displacement(displacement_bytes)
+
+    if r_slash_m_bits_string == '110' and mod == '00':
+        return f'[{int_string_displacement}]'
+
     return f'[{core_string} + {int_string_displacement}]'
 
 
@@ -154,13 +153,14 @@ def decode_memory_mov(
     width_bit,
     reg_bits_string,
     r_slash_m_bits_string,
+    mod,
     displacement_bytes
 ):
     reg_decoded = get_readable_reg(reg_bits_string, width_bit)
     r_slash_m_decoded = get_readable_eff_add(
             r_slash_m_bits_string,
-            mod='10',
-            displacement_bytes=displacement_bytes
+            mod,
+            displacement_bytes
     )
     # TODO: DRY with `decode_reg_to_reg_mov`?
     if destination_bit == '1':
