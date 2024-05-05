@@ -3,7 +3,7 @@
 import logging
 
 logging.basicConfig(
-        level=logging.INFO,
+        level=logging.WARN,
         format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
 )
 
@@ -145,7 +145,10 @@ def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
     if r_slash_m_bits_string == '110' and mod == '00':
         return f'[{int_string_displacement}]'
 
-    return f'[{core_string} + {int_string_displacement}]'
+    if int_string_displacement == '0':
+        return f'[{core_string}]'
+    else:
+        return f'[{core_string} + {int_string_displacement}]'
 
 
 def decode_memory_mov(

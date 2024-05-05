@@ -1,7 +1,7 @@
 import logging
 
 logging.basicConfig(
-        level=logging.INFO,
+        level=logging.WARN,
         format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
 )
 
@@ -38,6 +38,6 @@ def test(filename):
         assert reconstructed_contents == original_contents
 
 
-# test('listing_0037_single_register_mov')
-# test('listing_0038_many_register_mov')
+test('listing_0037_single_register_mov')
+test('listing_0038_many_register_mov')
 test('listing_0039_more_movs')
