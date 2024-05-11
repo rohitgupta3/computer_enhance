@@ -96,16 +96,13 @@ class Listing0040DecodeTest(unittest.TestCase):
 
         mod = '01'
         mov_prefix = '100010'
-        make_bits = lambda prefix: (
+        make_bytes = lambda prefix: bits_to_bytes(
             f'{prefix}{dest_bit}{width_bit}'
             f'{mod}{reg}{r_slash_m}'
         )
-        mov_bits = make_bits(mov_prefix)
-        # mov_bits = (
-        #     f'{mov_prefix}{dest_bit}{width_bit}'
-        #     f'{mod}{reg}{r_slash_m}'
-        # )
-        mov_bytes = bits_to_bytes(mov_bits)
+        # mov_bits = make_bits(mov_prefix)
+        # mov_bytes = bits_to_bytes(mov_bits)
+        mov_bytes = make_bytes(mov_prefix)
         self.assertEqual(parser.get_more_bytes_needed(mov_bytes), 1)
 
 
