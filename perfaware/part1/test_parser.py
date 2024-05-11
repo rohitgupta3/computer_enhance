@@ -94,21 +94,31 @@ class Listing0040DecodeTest(unittest.TestCase):
         reg = '000'
         r_slash_m = '000'
 
-        mod = '01'
         mov_prefix = '100010'
-        make_bytes = lambda prefix: bits_to_bytes(
+        make_bytes = lambda prefix, mod: bits_to_bytes(
             f'{prefix}{dest_bit}{width_bit}'
             f'{mod}{reg}{r_slash_m}'
         )
-        mov_bytes = make_bytes('100010')
-        add_bytes = make_bytes('000000')
-        sub_bytes = make_bytes('001010')
-        cmp_bytes = make_bytes('001110')
-
+        # mod = '01'
+        mov_bytes = make_bytes('100010', '01')
+        add_bytes = make_bytes('000000', '01')
+        sub_bytes = make_bytes('001010', '01')
+        cmp_bytes = make_bytes('001110', '01')
         self.assertEqual(parser.get_more_bytes_needed(mov_bytes), 1)
         self.assertEqual(parser.get_more_bytes_needed(add_bytes), 1)
         self.assertEqual(parser.get_more_bytes_needed(sub_bytes), 1)
         self.assertEqual(parser.get_more_bytes_needed(cmp_bytes), 1)
+
+        # mod = '10'
+        mov_bytes = make_bytes('100010', '10')
+        add_bytes = make_bytes('000000', '10')
+        sub_bytes = make_bytes('001010', '10')
+        cmp_bytes = make_bytes('001110', '10')
+        self.assertEqual(parser.get_more_bytes_needed(mov_bytes), 2)
+        self.assertEqual(parser.get_more_bytes_needed(add_bytes), 2)
+        self.assertEqual(parser.get_more_bytes_needed(sub_bytes), 2)
+        self.assertEqual(parser.get_more_bytes_needed(cmp_bytes), 2)
+
 
 
 
