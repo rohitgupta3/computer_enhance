@@ -100,10 +100,15 @@ class Listing0040DecodeTest(unittest.TestCase):
             f'{prefix}{dest_bit}{width_bit}'
             f'{mod}{reg}{r_slash_m}'
         )
-        # mov_bits = make_bits(mov_prefix)
-        # mov_bytes = bits_to_bytes(mov_bits)
-        mov_bytes = make_bytes(mov_prefix)
+        mov_bytes = make_bytes('100010')
+        add_bytes = make_bytes('000000')
+        sub_bytes = make_bytes('001010')
+        cmp_bytes = make_bytes('001110')
+
         self.assertEqual(parser.get_more_bytes_needed(mov_bytes), 1)
+        self.assertEqual(parser.get_more_bytes_needed(add_bytes), 1)
+        self.assertEqual(parser.get_more_bytes_needed(sub_bytes), 1)
+        self.assertEqual(parser.get_more_bytes_needed(cmp_bytes), 1)
 
 
 
