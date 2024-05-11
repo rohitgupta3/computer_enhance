@@ -9,6 +9,7 @@ import parser
 import tempfile
 import subprocess
 import os
+import mock
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'test_artifacts')
 
@@ -41,3 +42,22 @@ def test_decode_executable(filename):
 test_decode_executable('listing_0037_single_register_mov')
 test_decode_executable('listing_0038_many_register_mov')
 test_decode_executable('listing_0039_more_movs')
+
+def test_decode_regmem_tofrom_reg():
+    pass
+
+
+# There will be some code like this
+# if bytes_start_with('100010')
+#     or bytes_start_with('000000')
+#     or bytes_start_with('001010')
+#     or bytes_start_with('001110'):
+#     asm_after_operator = parse_regmem_regmem(some_bytes)
+@mock.patch('parser.parse_regmem_regmem')
+def test_grouped_correctly(mock_parse_regmem_regmem):
+    # Example bits (replace this with your actual bit sequence)
+    bit_sequence = "0100100001100101011011000110110001101111"
+    byte_values = [int(bit_sequence[i:i+8], 2) for i in range(0, len(bit_sequence), 8)]
+    machine_code = bytes(byte_values)
+    parser.parse_machine_code(machine_code)
+    mock_parse_regmem_regmem.assert_called_once()
