@@ -12,7 +12,7 @@ import os
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'test_artifacts')
 
-def test(filename):
+def test_decode_executable(filename):
     lines = parser.decode_executable(filename)
     logging.info(f'Disassembled {filename}: {lines}')
 
@@ -38,6 +38,6 @@ def test(filename):
         assert reconstructed_contents == original_contents
 
 
-test('listing_0037_single_register_mov')
-test('listing_0038_many_register_mov')
-test('listing_0039_more_movs')
+test_decode_executable('listing_0037_single_register_mov')
+test_decode_executable('listing_0038_many_register_mov')
+test_decode_executable('listing_0039_more_movs')
