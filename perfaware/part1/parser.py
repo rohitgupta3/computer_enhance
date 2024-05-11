@@ -97,12 +97,23 @@ def parse_100010(some_bytes):
 
     return asm
 
+# First in each group
+MOV_REGMEM_REGMEM_PREFIX = '100010'
+ADD_REGMEM_REGMEM_PREFIX = '000000'
+SUB_REGMEM_REGMEM_PREFIX = '001010'
+CMP_REGMEM_REG_PREFIX    = '001110'
 def get_more_bytes_needed(two_bytes):
     first_byte = two_bytes[0]
     first_bits = byte_to_bitstring(first_byte)
 
-    if first_bits[0:6] == '100010':
-        logging.debug('this is a register-to-register or memory-to-register or register-to-memory mov')
+    # if first_bits[0:6] == '100010':
+    if first_bits[0:6] in [
+        MOV_REGMEM_REGMEM_PREFIX,
+        ADD_REGMEM_REGMEM_PREFIX,
+        SUB_REGMEM_REGMEM_PREFIX,
+        CMP_REGMEM_REG_PREFIX
+    ]:
+        logging.debug('this is register-to-register or memory-to-register or register-to-memory')
         # TODO: don't love the naming
         return get_more_bytes_needed_100010(two_bytes)
     elif first_bits[0:4] == '1011':

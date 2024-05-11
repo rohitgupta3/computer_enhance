@@ -50,6 +50,14 @@ def test_decode_regmem_tofrom_reg():
     pass
 
 
+def bits_to_bytes(bits: str):
+    byte_values  = [
+        int(bits[i:i+8], 2)
+        for i in range(0, len(bits), 8)
+    ]
+    return bytes(byte_values )
+
+
 class Listing0040DecodeTest(unittest.TestCase):
 # There will be some code like this
 # if bytes_start_with('100010')
@@ -75,11 +83,33 @@ class Listing0040DecodeTest(unittest.TestCase):
         ]
         self.mov_regmem_regmem_machine_code = bytes(mov_regmem_regmem_byte_vals)
 
-    @mock.patch('parser.parse_regmem_regmem')
-    def test_grouped_correctly(self, mock_parse_regmem_regmem):
-        # Example bits (replace this with your actual bit sequence)
-        parser.parse_machine_code(self.mov_regmem_regmem_machine_code)
-        mock_parse_regmem_regmem.assert_called_once()
+    def test_more_bytes_needed_for_regmem_regmem_mod_01(self):
+        """
+        mod = '01' => 8-bit disp
+        mod = '10' => 16-bit disp
+        mod = '11' => no displacement
+        """
+        dest_bit = '0'
+        width_bit = '0'
+        reg = '000'
+        r_slash_m = '000'
+
+        mod = '01'
+        mov_prefix = '100010'
+        mov_bits = (
+            f'{mov_prefix}{dest_bit}{width_bit}'
+            f'{mod}{reg}{r_slash_m}'
+        )
+        mov_bytes = bits_to_bytes(mov_bits)
+        self.assertEqual(parser.get_more_bytes_needed(mov_bytes), 1)
+
+
+
+    # @mock.patch('parser.parse_regmem_regmem')
+    # def test_grouped_correctly(self, mock_parse_regmem_regmem):
+    #     # Example bits (replace this with your actual bit sequence)
+    #     parser.parse_machine_code(self.mov_regmem_regmem_machine_code)
+    #     mock_parse_regmem_regmem.assert_called_once()
 
     # @mock.patch('parser.parse_regmem_regmem')
     # def test_grouped_correctly(self, mock_parse_regmem_regmem):
