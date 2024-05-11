@@ -119,6 +119,17 @@ class Listing0040DecodeTest(unittest.TestCase):
         self.assertEqual(parser.get_more_bytes_needed(sub_bytes), 2)
         self.assertEqual(parser.get_more_bytes_needed(cmp_bytes), 2)
 
+        # mod = '11'
+        mov_bytes = make_bytes('100010', '11')
+        add_bytes = make_bytes('000000', '11')
+        sub_bytes = make_bytes('001010', '11')
+        cmp_bytes = make_bytes('001110', '11')
+        self.assertEqual(parser.get_more_bytes_needed(mov_bytes), 0)
+        self.assertEqual(parser.get_more_bytes_needed(add_bytes), 0)
+        self.assertEqual(parser.get_more_bytes_needed(sub_bytes), 0)
+        self.assertEqual(parser.get_more_bytes_needed(cmp_bytes), 0)
+
+
 
 
 
