@@ -256,6 +256,11 @@ def decode_executable(filename):
     ]
     return lines
 
+def parse_regmem_regmem():
+    pass
+
+def parse_machine_code(machine_code):
+    pass
 
 if __name__ == '__main__':
     # FILENAME = 'listing_0037_single_register_mov'
