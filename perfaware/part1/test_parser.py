@@ -46,10 +46,8 @@ test_decode_executable('listing_0039_more_movs')
 
 
 
-def test_decode_regmem_tofrom_reg():
-    pass
 
-
+# Do we feel good about not testing this test code?
 def bits_to_bytes(bits: str):
     byte_values  = [
         int(bits[i:i+8], 2)
@@ -57,14 +55,7 @@ def bits_to_bytes(bits: str):
     ]
     return bytes(byte_values )
 
-
 class Listing0040DecodeTest(unittest.TestCase):
-# There will be some code like this
-# if bytes_start_with('100010')
-#     or bytes_start_with('000000')
-#     or bytes_start_with('001010')
-#     or bytes_start_with('001110'):
-#     asm_after_operator = parse_regmem_regmem(some_bytes)
     def setUp(self):
         super().setUp()
         dest = '0'
@@ -128,10 +119,6 @@ class Listing0040DecodeTest(unittest.TestCase):
         self.assertEqual(parser.get_more_bytes_needed(add_bytes), 0)
         self.assertEqual(parser.get_more_bytes_needed(sub_bytes), 0)
         self.assertEqual(parser.get_more_bytes_needed(cmp_bytes), 0)
-
-
-
-
 
     # @mock.patch('parser.parse_regmem_regmem')
     # def test_grouped_correctly(self, mock_parse_regmem_regmem):
