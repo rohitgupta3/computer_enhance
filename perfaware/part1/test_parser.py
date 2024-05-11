@@ -57,11 +57,36 @@ class Listing0040DecodeTest(unittest.TestCase):
 #     or bytes_start_with('001010')
 #     or bytes_start_with('001110'):
 #     asm_after_operator = parse_regmem_regmem(some_bytes)
+    def setUp(self):
+        super().setUp()
+        dest = '0'
+        width = '0'
+        mod = '00'
+        reg = '000'
+        r_slash_m = '000'
+        # TODO: below not necessarily legal e.g. maybe this should have displacement
+        mov_regmem_regmem_bits = (
+            f'100010{dest}{width}'
+            f'{mod}{reg}{r_slash_m}'
+        )
+        mov_regmem_regmem_byte_vals = [
+            int(mov_regmem_regmem_bits[i:i+8], 2)
+            for i in range(0, len(mov_regmem_regmem_bits), 8)
+        ]
+        self.mov_regmem_regmem_machine_code = bytes(mov_regmem_regmem_byte_vals)
+
     @mock.patch('parser.parse_regmem_regmem')
     def test_grouped_correctly(self, mock_parse_regmem_regmem):
         # Example bits (replace this with your actual bit sequence)
-        bit_sequence = "0100100001100101011011000110110001101111"
-        byte_values = [int(bit_sequence[i:i+8], 2) for i in range(0, len(bit_sequence), 8)]
-        machine_code = bytes(byte_values)
-        parser.parse_machine_code(machine_code)
+        parser.parse_machine_code(self.mov_regmem_regmem_machine_code)
         mock_parse_regmem_regmem.assert_called_once()
+
+    # @mock.patch('parser.parse_regmem_regmem')
+    # def test_grouped_correctly(self, mock_parse_regmem_regmem):
+    #     # Example bits (replace this with your actual bit sequence)
+    #     bit_sequence = "0100100001100101011011000110110001101111"
+    #     byte_values = [int(bit_sequence[i:i+8], 2) for i in range(0, len(bit_sequence), 8)]
+    #     breakpoint()
+    #     machine_code = bytes(byte_values)
+    #     parser.parse_machine_code(machine_code)
+    #     mock_parse_regmem_regmem.assert_called_once()
