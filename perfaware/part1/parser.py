@@ -107,7 +107,7 @@ def get_more_bytes_needed(two_bytes):
     first_bits = byte_to_bitstring(first_byte)
 
     # if first_bits[0:6] == '100010':
-    if first_bits[0:6] in [
+    if first_bits[:6] in [
         MOV_REGMEM_REGMEM_PREFIX,
         ADD_REGMEM_REGMEM_PREFIX,
         SUB_REGMEM_REGMEM_PREFIX,
@@ -115,7 +115,10 @@ def get_more_bytes_needed(two_bytes):
     ]:
         logging.debug('this is register-to-register or memory-to-register or register-to-memory')
         return get_more_bytes_needed_rmrm(two_bytes)
-    elif first_bits[0:4] == '1011':
+    # TODO: deal with third row
+    elif first_bits[:4] == '1011'
+        or first_bits[:7] == '0001010'
+        or first_bits[:7] == '0010110':
         logging.debug('this is an immediate-to-register mov')
         return get_more_bytes_needed_1011(two_bytes)
     else:
