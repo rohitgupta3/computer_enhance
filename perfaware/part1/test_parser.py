@@ -137,7 +137,7 @@ class Listing0040DecodeTest(unittest.TestCase):
         self.assertEqual(parser.get_more_bytes_needed(mov_first_two_bytes), 0)
 
         add_bits = f'0000010{w0}{data_8bits}'
-        add_first_two_bytes = bits_to_bytes(add_first_two_bytes)
+        add_first_two_bytes = bits_to_bytes(add_bits)
         self.assertEqual(parser.get_more_bytes_needed(add_first_two_bytes), 0)
 
 

@@ -117,7 +117,7 @@ def get_more_bytes_needed(two_bytes):
         return get_more_bytes_needed_rmrm(two_bytes)
     # TODO: deal with third row
     elif (first_bits[:4] == '1011' or
-          first_bits[:7] == '0001010' or
+          first_bits[:7] == '0000010' or
           first_bits[:7] == '0010110'):
         logging.debug('this is an immediate-to-register mov')
         return get_more_bytes_row3(two_bytes)
@@ -132,7 +132,7 @@ def get_more_bytes_row3(two_bytes):
     if first_bits[:4] == '1011':
         width_bit = first_bits[4]
     # add row 3, sub row 3
-    elif first_bits[:7] == '0001010' or first_bits[:7] == '0010110':
+    elif first_bits[:7] == '0000010' or first_bits[:7] == '0010110':
         width_bit = first_bits[7]
     else:
         raise ValueError(f'in `get_more_bytes_row3 with first_bits: {first_bits}')
