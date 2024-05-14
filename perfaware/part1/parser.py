@@ -81,27 +81,27 @@ def get_more_bytes_needed_rmrm(two_bytes):
             return 0
 
 
-def parse_100010(some_bytes):
-    first_byte = some_bytes[0]
-    first_bits = byte_to_bitstring(first_byte)
-    destination_bit = first_bits[6]
-    width_bit = first_bits[7]
-
-    second_byte = some_bytes[1]
-    second_bits = byte_to_bitstring(second_byte)
-    mod = second_bits[:2]
-    reg = second_bits[2:5]
-    r_slash_m = second_bits[5:]
-
-    if mod == '11':
-        logging.debug('this is a register-to-register mov')
-        asm = decode_reg_to_reg_mov(destination_bit, width_bit, reg, r_slash_m)
-        logging.debug(asm)
-    else:
-        logging.debug('this is memory mov')
-        asm = decode_memory_mov(destination_bit, width_bit, reg, r_slash_m, mod, some_bytes[2:])
-
-    return asm
+# def parse_100010(some_bytes):
+#     first_byte = some_bytes[0]
+#     first_bits = byte_to_bitstring(first_byte)
+#     destination_bit = first_bits[6]
+#     width_bit = first_bits[7]
+# 
+#     second_byte = some_bytes[1]
+#     second_bits = byte_to_bitstring(second_byte)
+#     mod = second_bits[:2]
+#     reg = second_bits[2:5]
+#     r_slash_m = second_bits[5:]
+# 
+#     if mod == '11':
+#         logging.debug('this is a register-to-register mov')
+#         asm = decode_reg_to_reg_mov(destination_bit, width_bit, reg, r_slash_m)
+#         logging.debug(asm)
+#     else:
+#         logging.debug('this is memory mov')
+#         asm = decode_memory_mov(destination_bit, width_bit, reg, r_slash_m, mod, some_bytes[2:])
+# 
+#     return asm
 
 def get_more_bytes_needed(two_bytes):
     first_byte = two_bytes[0]
@@ -178,42 +178,42 @@ def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
         return f'[{core_string} + {int_string_displacement}]'
 
 
-def decode_memory_mov(
-    destination_bit,
-    width_bit,
-    reg_bits_string,
-    r_slash_m_bits_string,
-    mod,
-    displacement_bytes
-):
-    reg_decoded = get_readable_reg(reg_bits_string, width_bit)
-    r_slash_m_decoded = get_readable_eff_add(
-            r_slash_m_bits_string,
-            mod,
-            displacement_bytes
-    )
-    # TODO: DRY with `decode_reg_to_reg_mov`?
-    if destination_bit == '1':
-        first_token = reg_decoded
-        second_token = r_slash_m_decoded
-    elif destination_bit == '0':
-        first_token = r_slash_m_decoded
-        second_token = reg_decoded
-    asm_string = f'mov {first_token}, {second_token}'
-    return asm_string
+# def decode_memory_mov(
+#     destination_bit,
+#     width_bit,
+#     reg_bits_string,
+#     r_slash_m_bits_string,
+#     mod,
+#     displacement_bytes
+# ):
+#     reg_decoded = get_readable_reg(reg_bits_string, width_bit)
+#     r_slash_m_decoded = get_readable_eff_add(
+#             r_slash_m_bits_string,
+#             mod,
+#             displacement_bytes
+#     )
+#     # TODO: DRY with `decode_reg_to_reg_mov`?
+#     if destination_bit == '1':
+#         first_token = reg_decoded
+#         second_token = r_slash_m_decoded
+#     elif destination_bit == '0':
+#         first_token = r_slash_m_decoded
+#         second_token = reg_decoded
+#     asm_string = f'mov {first_token}, {second_token}'
+#     return asm_string
 
 
-def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m_bits_string):
-    reg_decoded = get_readable_reg(reg_bits_string, width_bit)
-    r_slash_m_decoded = get_readable_reg(r_slash_m_bits_string, width_bit)
-    if destination_bit == '1':
-        first_token = reg_decoded
-        second_token = r_slash_m_decoded
-    elif destination_bit == '0':
-        first_token = r_slash_m_decoded
-        second_token = reg_decoded
-    asm_string = f'mov {first_token}, {second_token}'
-    return asm_string
+# def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m_bits_string):
+#     reg_decoded = get_readable_reg(reg_bits_string, width_bit)
+#     r_slash_m_decoded = get_readable_reg(r_slash_m_bits_string, width_bit)
+#     if destination_bit == '1':
+#         first_token = reg_decoded
+#         second_token = r_slash_m_decoded
+#     elif destination_bit == '0':
+#         first_token = r_slash_m_decoded
+#         second_token = reg_decoded
+#     asm_string = f'mov {first_token}, {second_token}'
+#     return asm_string
 
 
 # TODO: could DRY with `get_more_bytes_needed_row3`
@@ -227,6 +227,65 @@ def parse_1011(some_bytes):
     immediate_s = get_int_string_from_bytes(some_bytes[1:])
     return f'mov {reg_decoded}, {immediate_s}'
 
+def parse_rmrm_operands(some_bytes):
+    first_byte = some_bytes[0]
+    first_bits = byte_to_bitstring(first_byte)
+    destination_bit = first_bits[6]
+    width_bit = first_bits[7]
+
+    second_byte = some_bytes[1]
+    second_bits = byte_to_bitstring(second_byte)
+    mod = second_bits[:2]
+    reg = second_bits[2:5]
+    r_slash_m = second_bits[5:]
+
+    if mod == '11':
+        logging.debug('this is a register-to-register operation')
+        asm = decode_reg_to_reg_operands(destination_bit, width_bit, reg, r_slash_m)
+        logging.debug(asm)
+    else:
+        logging.debug('this is memory operation')
+        asm = decode_memory_operands(destination_bit, width_bit, reg, r_slash_m, mod, some_bytes[2:])
+
+    return asm
+
+def decode_reg_to_reg_operands(destination_bit, width_bit, reg_bits_string, r_slash_m_bits_string):
+    reg_decoded = get_readable_reg(reg_bits_string, width_bit)
+    r_slash_m_decoded = get_readable_reg(r_slash_m_bits_string, width_bit)
+    if destination_bit == '1':
+        first_token = reg_decoded
+        second_token = r_slash_m_decoded
+    elif destination_bit == '0':
+        first_token = r_slash_m_decoded
+        second_token = reg_decoded
+    asm_string = f'{first_token}, {second_token}'
+    return asm_string
+
+def decode_memory_operands(
+    destination_bit,
+    width_bit,
+    reg_bits_string,
+    r_slash_m_bits_string,
+    mod,
+    displacement_bytes
+):
+    reg_decoded = get_readable_reg(reg_bits_string, width_bit)
+    r_slash_m_decoded = get_readable_eff_add(
+            r_slash_m_bits_string,
+            mod,
+            displacement_bytes
+    )
+    # TODO: DRY with `decode_reg_to_reg_operands`?
+    if destination_bit == '1':
+        first_token = reg_decoded
+        second_token = r_slash_m_decoded
+    elif destination_bit == '0':
+        first_token = r_slash_m_decoded
+        second_token = reg_decoded
+    asm_string = f'{first_token}, {second_token}'
+    return asm_string
+
+
 
 # TODO: could DRY with `get_more_bytes_needed` / re-architect generally
 def parse_next_group(some_bytes):
@@ -236,7 +295,14 @@ def parse_next_group(some_bytes):
     if first_bits[0:6] == '100010':
         logging.debug('this is a register-to-register or memory-to-register or register-to-memory mov')
         # TODO: don't love the naming
-        return parse_100010(some_bytes)
+        # return parse_100010(some_bytes)
+        return 'mov ' + parse_rmrm_operands(some_bytes)
+    elif first_bits[0:6] == '000000':
+        logging.debug('this is a reg/memory with register to either add')
+        return 'add ' + parse_rmrm_operands(some_bytes)
+    elif first_bits[0:6] == '001010':
+        logging.debug('this is a reg/memory and register to either sub')
+        return 'sub ' + parse_rmrm_operands(some_bytes)
     elif first_bits[0:4] == '1011':
         logging.debug('this is an immediate-to-register mov')
         return parse_1011(some_bytes)

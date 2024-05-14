@@ -158,7 +158,8 @@ class Listing0040DecodeTest(unittest.TestCase):
         sub_first_two_bytes = bits_to_bytes(sub_bits)
         self.assertEqual(parser.get_more_bytes_needed(sub_first_two_bytes), 1)
 
-
+    def test_regmem_regmem(self):
+        pass
 
 
 
