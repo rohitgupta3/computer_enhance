@@ -140,6 +140,12 @@ class Listing0040DecodeTest(unittest.TestCase):
         add_first_two_bytes = bits_to_bytes(add_bits)
         self.assertEqual(parser.get_more_bytes_needed(add_first_two_bytes), 0)
 
+        sub_bits = f'0010110{w0}{data_8bits}'
+        sub_first_two_bytes = bits_to_bytes(sub_bits)
+        self.assertEqual(parser.get_more_bytes_needed(sub_first_two_bytes), 0)
+
+
+
 
 
     # @mock.patch('parser.parse_regmem_regmem')
