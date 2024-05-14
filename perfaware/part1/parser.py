@@ -9,6 +9,12 @@ logging.basicConfig(
 
 import sys
 
+# First in each group
+MOV_REGMEM_REGMEM_PREFIX = '100010'
+ADD_REGMEM_REGMEM_PREFIX = '000000'
+SUB_REGMEM_REGMEM_PREFIX = '001010'
+CMP_REGMEM_REG_PREFIX    = '001110'
+
 def byte_to_bitstring(some_int):
     """ e.g.
     some_int = some_bytes[0]
@@ -97,11 +103,6 @@ def parse_100010(some_bytes):
 
     return asm
 
-# First in each group
-MOV_REGMEM_REGMEM_PREFIX = '100010'
-ADD_REGMEM_REGMEM_PREFIX = '000000'
-SUB_REGMEM_REGMEM_PREFIX = '001010'
-CMP_REGMEM_REG_PREFIX    = '001110'
 def get_more_bytes_needed(two_bytes):
     first_byte = two_bytes[0]
     first_bits = byte_to_bitstring(first_byte)
