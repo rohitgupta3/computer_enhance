@@ -144,6 +144,20 @@ class Listing0040DecodeTest(unittest.TestCase):
         sub_first_two_bytes = bits_to_bytes(sub_bits)
         self.assertEqual(parser.get_more_bytes_needed(sub_first_two_bytes), 0)
 
+        # w = '1'
+        reg = '000'
+        mov_bits = f'1011{w1}{reg}{data_16bits}'
+        mov_first_two_bytes = bits_to_bytes(mov_bits)
+        self.assertEqual(parser.get_more_bytes_needed(mov_first_two_bytes), 1)
+
+        add_bits = f'0000010{w1}{data_16bits}'
+        add_first_two_bytes = bits_to_bytes(add_bits)
+        self.assertEqual(parser.get_more_bytes_needed(add_first_two_bytes), 1)
+
+        sub_bits = f'0010110{w1}{data_16bits}'
+        sub_first_two_bytes = bits_to_bytes(sub_bits)
+        self.assertEqual(parser.get_more_bytes_needed(sub_first_two_bytes), 1)
+
 
 
 
