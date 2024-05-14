@@ -53,7 +53,7 @@ def bits_to_bytes(bits: str):
         int(bits[i:i+8], 2)
         for i in range(0, len(bits), 8)
     ]
-    return bytes(byte_values )
+    return bytes(byte_values)
 
 class Listing0040DecodeTest(unittest.TestCase):
     def setUp(self):
@@ -119,6 +119,20 @@ class Listing0040DecodeTest(unittest.TestCase):
         self.assertEqual(parser.get_more_bytes_needed(add_bytes), 0)
         self.assertEqual(parser.get_more_bytes_needed(sub_bytes), 0)
         self.assertEqual(parser.get_more_bytes_needed(cmp_bytes), 0)
+
+    def test_more_bytes_needed_for_row3(self):
+        """
+        w = '0' => 8-bit data
+        w = '1' => 16-bit data
+        """
+        data_8bits = '00000000'
+        data_16bits = '0000000011111111'
+        w0 = '0'
+        w1 = '1'
+        reg = '000'
+        mov_bits = f'1011{w0}{reg}{data_8bits}'
+        mov_first_two_bytes = bits_to_bytes(mov_bits)
+        self.assertEqual(parser.get_more_bytes_needed(mov_first_two_bytes), 0)
 
     # @mock.patch('parser.parse_regmem_regmem')
     # def test_grouped_correctly(self, mock_parse_regmem_regmem):

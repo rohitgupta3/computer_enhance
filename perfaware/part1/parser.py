@@ -116,13 +116,27 @@ def get_more_bytes_needed(two_bytes):
         logging.debug('this is register-to-register or memory-to-register or register-to-memory')
         return get_more_bytes_needed_rmrm(two_bytes)
     # TODO: deal with third row
-    elif first_bits[:4] == '1011'
-        or first_bits[:7] == '0001010'
-        or first_bits[:7] == '0010110':
+    elif (first_bits[:4] == '1011' or
+          first_bits[:7] == '0001010' or
+          first_bits[:7] == '0010110'):
         logging.debug('this is an immediate-to-register mov')
-        return get_more_bytes_needed_1011(two_bytes)
+        return get_more_bytes_row3(two_bytes)
     else:
         raise ValueError(f'{two_bytes} not supported')
+
+def get_more_bytes_row3(two_bytes):
+    first_byte = two_bytes[0]
+    first_bits = byte_to_bitstring(first_byte)
+    logging.debug(f'first_bits: {first_bits}')
+    # mov row 3
+    if first_bits[:4] == '1011':
+        width_bit = first_bits[4]
+    # add row 3, sub row 3
+    elif first_bits[:7] == '0001010' or first_bits[:7] == '0010110':
+        width_bit = first_bits[7]
+    else:
+        raise ValueError(f'in `get_more_bytes_row3 with first_bits: {first_bits}')
+    return 1 if width_bit == '1' else 0
 
 
 def get_int_string_from_bytes(displacement_bytes):
@@ -201,18 +215,7 @@ def decode_reg_to_reg_mov(destination_bit, width_bit, reg_bits_string, r_slash_m
     return asm_string
 
 
-def get_more_bytes_needed_1011(two_bytes):
-    first_byte = two_bytes[0]
-    first_bits = byte_to_bitstring(first_byte)
-    logging.debug(f'first_bits: {first_bits}')
-    width_bit = first_bits[4]
-    # reg = first_bits[5:]
-    # reg_decoded = get_readable_reg(reg, width_bit)
-    # register_size_bytes = get_size_of_reg_in_bytes(reg_decoded)
-    # return register_size_bytes
-    return 1 if width_bit == '1' else 0
-
-# TODO: could DRY with `get_more_bytes_needed_1011`
+# TODO: could DRY with `get_more_bytes_needed_row3`
 def parse_1011(some_bytes):
     first_byte = some_bytes[0]
     first_bits = byte_to_bitstring(first_byte)
