@@ -129,10 +129,18 @@ class Listing0040DecodeTest(unittest.TestCase):
         data_16bits = '0000000011111111'
         w0 = '0'
         w1 = '1'
+
+        # w = '0'
         reg = '000'
         mov_bits = f'1011{w0}{reg}{data_8bits}'
         mov_first_two_bytes = bits_to_bytes(mov_bits)
         self.assertEqual(parser.get_more_bytes_needed(mov_first_two_bytes), 0)
+
+        add_bits = f'0000010{w0}{data_8bits}'
+        add_first_two_bytes = bits_to_bytes(add_first_two_bytes)
+        self.assertEqual(parser.get_more_bytes_needed(add_first_two_bytes), 0)
+
+
 
     # @mock.patch('parser.parse_regmem_regmem')
     # def test_grouped_correctly(self, mock_parse_regmem_regmem):
