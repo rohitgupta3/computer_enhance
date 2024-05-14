@@ -55,7 +55,7 @@ def get_readable_reg(reg, width_bit):
 # opcode starts with 100010
 ###########
 
-def get_more_bytes_needed_100010(two_bytes):
+def get_more_bytes_needed_rmrm(two_bytes):
     second_byte = two_bytes[1]
     # second_bits = bin(second_byte)[2:]
     second_bits = byte_to_bitstring(second_byte)
@@ -114,8 +114,7 @@ def get_more_bytes_needed(two_bytes):
         CMP_REGMEM_REG_PREFIX
     ]:
         logging.debug('this is register-to-register or memory-to-register or register-to-memory')
-        # TODO: don't love the naming
-        return get_more_bytes_needed_100010(two_bytes)
+        return get_more_bytes_needed_rmrm(two_bytes)
     elif first_bits[0:4] == '1011':
         logging.debug('this is an immediate-to-register mov')
         return get_more_bytes_needed_1011(two_bytes)
