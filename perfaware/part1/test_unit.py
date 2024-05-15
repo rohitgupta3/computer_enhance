@@ -126,23 +126,3 @@ class Listing0040DecodeTest(unittest.TestCase):
         sub_first_two_bytes = bits_to_bytes(sub_bits)
         self.assertEqual(parser.get_more_bytes_needed(sub_first_two_bytes), 1)
 
-    def test_regmem_regmem(self):
-        pass
-
-
-
-    # @mock.patch('parser.parse_regmem_regmem')
-    # def test_grouped_correctly(self, mock_parse_regmem_regmem):
-    #     # Example bits (replace this with your actual bit sequence)
-    #     parser.parse_machine_code(self.mov_regmem_regmem_machine_code)
-    #     mock_parse_regmem_regmem.assert_called_once()
-
-    # @mock.patch('parser.parse_regmem_regmem')
-    # def test_grouped_correctly(self, mock_parse_regmem_regmem):
-    #     # Example bits (replace this with your actual bit sequence)
-    #     bit_sequence = "0100100001100101011011000110110001101111"
-    #     byte_values = [int(bit_sequence[i:i+8], 2) for i in range(0, len(bit_sequence), 8)]
-    #     breakpoint()
-    #     machine_code = bytes(byte_values)
-    #     parser.parse_machine_code(machine_code)
-    #     mock_parse_regmem_regmem.assert_called_once()

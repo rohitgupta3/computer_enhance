@@ -3,7 +3,7 @@
 import logging
 
 logging.basicConfig(
-        level=logging.WARN,
+        level=logging.DEBUG,
         format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
 )
 
@@ -114,7 +114,7 @@ def get_more_bytes_needed(two_bytes):
         SUB_REGMEM_REGMEM_PREFIX,
         CMP_REGMEM_REG_PREFIX
     ]:
-        logging.debug('this is register-to-register or memory-to-register or register-to-memory')
+        logging.debug(f'first_bits: {first_bits}, register-to-register / memory-to-register / register-to-memory')
         return get_more_bytes_needed_rmrm(two_bytes)
     # TODO: deal with third row
     elif (first_bits[:4] == '1011' or
@@ -123,7 +123,7 @@ def get_more_bytes_needed(two_bytes):
         logging.debug('this is an immediate-to-register mov')
         return get_more_bytes_row3(two_bytes)
     else:
-        raise ValueError(f'{two_bytes} not supported')
+        raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
 
 def get_more_bytes_row3(two_bytes):
     first_byte = two_bytes[0]
@@ -307,7 +307,7 @@ def parse_next_group(some_bytes):
         logging.debug('this is an immediate-to-register mov')
         return parse_1011(some_bytes)
     else:
-        raise ValueError(f'{two_bytes} not supported')
+        raise ValueError(f'{some_bytes} not supported')
 
 
 def decode_machine_code(file_contents):
@@ -327,6 +327,7 @@ def decode_machine_code(file_contents):
     return lines
 
 def decode_executable(filename):
+    # breakpoint()
     # TODO: relative path
     with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{filename}', mode='r+b') as fd:
         file_contents = fd.read()

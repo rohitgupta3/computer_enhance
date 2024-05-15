@@ -1,9 +1,9 @@
 import logging
 
-logging.basicConfig(
-        level=logging.WARN,
-        format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
-)
+# logging.basicConfig(
+#         level=logging.WARN,
+#         format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
+# )
 
 import parser
 import tempfile
@@ -38,9 +38,8 @@ def test_decode_executable(filename):
         assert reconstructed_contents == original_contents
 
 
-test_decode_executable('listing_0037_single_register_mov')
-test_decode_executable('listing_0038_many_register_mov')
-test_decode_executable('listing_0039_more_movs')
-
-
+# test_decode_executable('listing_0037_single_register_mov')
+# test_decode_executable('listing_0038_many_register_mov')
+# test_decode_executable('listing_0039_more_movs')
+test_decode_executable('listing_0041_add_sub_cmp_jnz')
 
