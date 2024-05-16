@@ -126,7 +126,8 @@ def get_more_bytes_needed(two_bytes):
     elif first_bits[:6] == '100000':
         return get_more_bytes_immed_rm(two_bytes)
     else:
-        raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
+        # raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
+        raise ValueError(f'Bytes not supported: {bytes_repr(two_bytes)}')
 
 def get_more_bytes_immed_rm(two_bytes):
     first_byte = two_bytes[0]
@@ -318,7 +319,12 @@ def parse_next_group(some_bytes):
         logging.debug('this is an immediate-to-register mov')
         return parse_1011(some_bytes)
     else:
-        raise ValueError(f'{some_bytes} not supported')
+        raise ValueError(f'Bytes not supported: {bytes_repr(some_bytes)}')
+        # raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
+
+def bytes_repr(some_bytes):
+    return " ".join([format(some_byte, '08b') for some_byte in some_bytes])
+
 
 
 def decode_machine_code(file_contents):
