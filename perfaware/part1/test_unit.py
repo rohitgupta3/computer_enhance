@@ -126,3 +126,17 @@ class Listing0040DecodeTest(unittest.TestCase):
         sub_first_two_bytes = bits_to_bytes(sub_bits)
         self.assertEqual(parser.get_more_bytes_needed(sub_first_two_bytes), 1)
 
+    def test_add_immediate_to_regmem(self):
+        """
+        Starts with 100000, second byte has '000' in it
+        """
+        opcode = '100000'
+        s_bit = '1'
+        w_bit = '1'
+        mod = '11' # register but not the point here
+        reg_slash_m = '000' # not the point
+
+        instruction_bits = f'{opcode}{s_bit}{w_bit}{mod}000{reg_slash_m}'
+        instruction_bytes = bits_to_bytes(instruction_bits)
+        self.assertEqual(parser.get_more_bytes_needed(instruction_bytes), 4)
+

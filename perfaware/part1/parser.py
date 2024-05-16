@@ -122,8 +122,19 @@ def get_more_bytes_needed(two_bytes):
           first_bits[:7] == '0010110'):
         logging.debug('this is an immediate-to-register mov')
         return get_more_bytes_row3(two_bytes)
+    # TODO: handle not only add immed_rm opcode
+    elif first_bits[:6] == '100000':
+        return get_more_bytes_immed_rm(two_bytes)
     else:
         raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
+
+def get_more_bytes_immed_rm(two_bytes):
+    first_byte = two_bytes[0]
+    first_bits = byte_to_bitstring(first_byte)
+    logging.debug(f'first_bits: {first_bits}')
+
+    w_bit = first_bits[7]
+    return 4 if w_bit == '1' else 3
 
 def get_more_bytes_row3(two_bytes):
     first_byte = two_bytes[0]
