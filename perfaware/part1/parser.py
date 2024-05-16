@@ -15,6 +15,9 @@ ADD_REGMEM_REGMEM_PREFIX = '000000'
 SUB_REGMEM_REGMEM_PREFIX = '001010'
 CMP_REGMEM_REG_PREFIX    = '001110'
 
+def bytes_repr(some_bytes):
+    return " ".join([format(some_byte, '08b') for some_byte in some_bytes])
+
 def byte_to_bitstring(some_int):
     """ e.g.
     some_int = some_bytes[0]
@@ -135,7 +138,32 @@ def get_more_bytes_immed_rm(two_bytes):
     logging.debug(f'first_bits: {first_bits}')
 
     w_bit = first_bits[7]
-    return 4 if w_bit == '1' else 3
+
+    second_byte = two_bytes[1]
+    second_bits = byte_to_bitstring(second_byte)
+    logging.debug(f'second_bits: {second_bits}')
+
+    mod = second_bits[:2]
+    r_slash_m = second_bits[5:]
+
+    displacement_bytes = 0
+    if mod == '11':
+        pass
+    elif mod == '10':
+        displacement_bytes = 2
+    elif mod == '01':
+        displacement_bytes = 1
+    elif mod == '00' and r_slash_m == '110':
+        displacement_bytes = 2
+    elif mod == '00' and r_slash_m != '110':
+        displacement_bytes = 0
+    else:
+        raise ValueError('not sure')
+
+    # TODO: don't understand sign / word bytes etc
+    data_bytes = 2 if w_bit == '1' else 1
+
+    return displacement_bytes + data_bytes
 
 def get_more_bytes_row3(two_bytes):
     first_byte = two_bytes[0]
@@ -318,12 +346,39 @@ def parse_next_group(some_bytes):
     elif first_bits[0:4] == '1011':
         logging.debug('this is an immediate-to-register mov')
         return parse_1011(some_bytes)
+    # TODO: handle not only add immed_rm opcode
+    elif first_bits[:6] == '100000':
+        return parse_immed_rm(some_bytes)
     else:
         raise ValueError(f'Bytes not supported: {bytes_repr(some_bytes)}')
         # raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
 
-def bytes_repr(some_bytes):
-    return " ".join([format(some_byte, '08b') for some_byte in some_bytes])
+def parse_immed_rm(some_bytes):
+    first_byte = some_bytes[0]
+    first_bits = byte_to_bitstring(first_byte)
+    logging.debug(f'first_bits: {first_bits}')
+
+    s_bit = first_bits[6]
+    w_bit = first_bits[7]
+
+    second_byte = some_bytes[1]
+    second_bits = byte_to_bitstring(second_byte)
+    logging.debug(f'second_bits: {second_bits}')
+
+    mod = second_bits[:2]
+    reg = second_bits[2:5] # '000' for add, '101' for sub, '111' for cmp
+    r_slash_m = second_bits[5:]
+
+    if mod == '11':
+        logging.debug('this is a register operation')
+        asm = decode_immed_reg_operands(destination_bit, width_bit, reg, r_slash_m)
+        logging.debug(asm)
+    else:
+        logging.debug('this is memory operation')
+        asm = decode_memory_operands(destination_bit, width_bit, reg, r_slash_m, mod, some_bytes[2:])
+
+    return asm
+
 
 
 

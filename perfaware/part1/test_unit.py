@@ -129,14 +129,15 @@ class Listing0040DecodeTest(unittest.TestCase):
     def test_add_immediate_to_regmem(self):
         """
         Starts with 100000, second byte has '000' in it
+        Modeled after the first new instruction pattern in listing 41
         """
         opcode = '100000'
         s_bit = '1'
         w_bit = '1'
-        mod = '11' # register but not the point here
-        reg_slash_m = '000' # not the point
+        mod = '11' # no displacement
+        reg_slash_m = '110' # not the point
 
         instruction_bits = f'{opcode}{s_bit}{w_bit}{mod}000{reg_slash_m}'
         instruction_bytes = bits_to_bytes(instruction_bits)
-        self.assertEqual(parser.get_more_bytes_needed(instruction_bytes), 4)
+        self.assertEqual(parser.get_more_bytes_needed(instruction_bytes), 2)
 
