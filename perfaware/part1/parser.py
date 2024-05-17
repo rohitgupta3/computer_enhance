@@ -148,7 +148,7 @@ def get_more_bytes_immed_rm(two_bytes):
 
     displacement_bytes = 0
     if mod == '11':
-        pass
+        pass # no-op
     elif mod == '10':
         displacement_bytes = 2
     elif mod == '01':
@@ -348,12 +348,12 @@ def parse_next_group(some_bytes):
         return parse_1011(some_bytes)
     # TODO: handle not only add immed_rm opcode
     elif first_bits[:6] == '100000':
-        return parse_immed_rm(some_bytes)
+        return 'add ' + parse_immed_rm_operands(some_bytes)
     else:
         raise ValueError(f'Bytes not supported: {bytes_repr(some_bytes)}')
         # raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
 
-def parse_immed_rm(some_bytes):
+def parse_immed_rm_operands(some_bytes):
     first_byte = some_bytes[0]
     first_bits = byte_to_bitstring(first_byte)
     logging.debug(f'first_bits: {first_bits}')
@@ -366,19 +366,24 @@ def parse_immed_rm(some_bytes):
     logging.debug(f'second_bits: {second_bits}')
 
     mod = second_bits[:2]
-    reg = second_bits[2:5] # '000' for add, '101' for sub, '111' for cmp
+    # middle_bits = second_bits[2:5] # '000' for add, '101' for sub, '111' for cmp
     r_slash_m = second_bits[5:]
 
+    # Register mode, no displacement
     if mod == '11':
         logging.debug('this is a register operation')
-        asm = decode_immed_reg_operands(destination_bit, width_bit, reg, r_slash_m)
+        # data_byte_count = 2 if w_bit == '1' else 1
+        # data_bytes = some_bytes[2:]
+        register_name = get_readable_reg(r_slash_m, w_bit)
+        immediate_s = get_int_string_from_bytes(some_bytes[2:])
+        asm = f'{register_name}, {immediate_s}'
         logging.debug(asm)
+        return asm
     else:
         logging.debug('this is memory operation')
-        asm = decode_memory_operands(destination_bit, width_bit, reg, r_slash_m, mod, some_bytes[2:])
+        # asm = decode_memory_operands(destination_bit, width_bit, reg, r_slash_m, mod, some_bytes[2:])
 
     return asm
-
 
 
 
