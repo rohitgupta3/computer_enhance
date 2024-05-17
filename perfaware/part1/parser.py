@@ -137,6 +137,7 @@ def get_more_bytes_immed_rm(two_bytes):
     first_bits = byte_to_bitstring(first_byte)
     logging.debug(f'first_bits: {first_bits}')
 
+    s_bit = first_bits[6]
     w_bit = first_bits[7]
 
     second_byte = two_bytes[1]
@@ -161,7 +162,13 @@ def get_more_bytes_immed_rm(two_bytes):
         raise ValueError('not sure')
 
     # TODO: don't understand sign / word bytes etc
-    data_bytes = 2 if w_bit == '1' else 1
+    data_bytes = 1
+    # I think the way this works is if `w_bit` is 1 i.e. you have to put the
+    # immediate into 16 bits, then if `s_bit` is 1 that means you get the 16 
+    # bits by getting 8 bits of data and sign extending it; otherwise get
+    # the full 16 bits from the instruction
+    if w_bit == '1' and s_bit == '0':
+        data_bytes = 2
 
     return displacement_bytes + data_bytes
 
@@ -390,6 +397,7 @@ def parse_immed_rm_operands(some_bytes):
 def decode_machine_code(file_contents):
     lines = []
     while True:
+        # breakpoint()
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]
