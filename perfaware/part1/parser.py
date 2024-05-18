@@ -396,6 +396,7 @@ def parse_immed_rm_operands(some_bytes):
 
 def decode_machine_code(file_contents):
     lines = []
+    line_no = 0
     while True:
         # breakpoint()
         if len(file_contents) == 0:
@@ -406,8 +407,9 @@ def decode_machine_code(file_contents):
         remaining_bytes = file_contents[:more_bytes_needed]
         file_contents = file_contents[more_bytes_needed:]
         asm = parse_next_group(two_bytes + remaining_bytes)
-        logging.info(f'asm: {asm}')
+        logging.info(f'asm, line {line_no}: {asm}')
         lines.append(asm)
+        line_no += 1
 
     return lines
 
