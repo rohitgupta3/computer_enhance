@@ -19,7 +19,7 @@ import os
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'test_artifacts')
 
-def test_decode_executable(filename):
+def test_decode_executable_bin(filename):
     lines = parser.decode_executable(filename)
     logging.info(f'Disassembled {filename}: {lines}')
 
@@ -44,6 +44,19 @@ def test_decode_executable(filename):
         original_contents = original_executable.read()
         assert reconstructed_contents == original_contents
 
+def test_decode_executable_asm(filename_bin):
+    lines = parser.decode_executable(filename_bin, line_index_stop=68)
+    logging.info(f'Disassembled {filename_bin}: {lines}')
+
+    with open(f'{filename_bin}.asm', mode='r') as original_asm_file:
+        original_asm = original_asm_file.read()
+
+    breakpoint()
+
+    original_asm = original_asm.split('\n')
+    for original_line, disassembled_line in zip(original_asm, lines):
+        assert original_line == disassembled_line
+
 
 
 if __name__ == '__main__':
@@ -54,7 +67,8 @@ if __name__ == '__main__':
 #     lines = decode_executable(FILENAME)
 #     for line in lines:
 #         logging.info(line)
-    # test_decode_executable('listing_0037_single_register_mov')
-    # test_decode_executable('listing_0038_many_register_mov')
-    # test_decode_executable('listing_0039_more_movs')
-    test_decode_executable('listing_0041_add_sub_cmp_jnz')
+    # test_decode_executable_bin('listing_0037_single_register_mov')
+    # test_decode_executable_bin('listing_0038_many_register_mov')
+    # test_decode_executable_bin('listing_0039_more_movs')
+    # test_decode_executable_bin('listing_0041_add_sub_cmp_jnz')
+    test_decode_executable_asm('listing_0041_add_sub_cmp_jnz')

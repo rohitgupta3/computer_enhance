@@ -88,7 +88,8 @@ def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
     if r_slash_m_bits_string == '111':
         core_string = 'bx'
 
-    if mod == '00':
+    # Special case
+    if mod == '00' and r_slash_m_bits_string != '110':
         return f'[{core_string}]'
 
     int_string_displacement = get_int_string_from_bytes(displacement_bytes)
@@ -478,7 +479,8 @@ def decode_machine_code(file_contents):
         if len(file_contents) == 0:
             break
         if line_no == 64:
-            breakpoint()
+            # breakpoint()
+            pass
         two_bytes = file_contents[:2]
         file_contents = file_contents[2:]
         more_bytes_needed = get_more_bytes_needed(two_bytes)
