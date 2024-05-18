@@ -450,7 +450,17 @@ def parse_immed_rm_operands(some_bytes):
         asm = f'{immediate_size} {effective_address}, {immediate_s}'
     # Memory mode, 16-bit displacement (special case of mod '00')
     elif mod == '00' and r_slash_m == '110':
-        pass
+        displacement_bytes = some_bytes[2:4]
+        data_bytes = some_bytes[4:]
+        effective_address = get_readable_eff_add(
+            r_slash_m_bits_string=r_slash_m,
+            mod=mod,
+            displacement_bytes=displacement_bytes
+        )
+        immediate_s = get_int_string_from_bytes(data_bytes)
+        immediate_size = 'word' if w_bit == '1' else 'byte'
+        asm = f'{immediate_size} {effective_address}, {immediate_s}'
+
     # TODO: do others
     else:
         raise NotImplementedError(f'Haven\'t dealt with {bytes_repr(some_bytes)}')
@@ -467,7 +477,7 @@ def decode_machine_code(file_contents):
         logging.info("New line")
         if len(file_contents) == 0:
             break
-        if line_no == 48:
+        if line_no == 64:
             breakpoint()
         two_bytes = file_contents[:2]
         file_contents = file_contents[2:]
