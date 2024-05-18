@@ -1,9 +1,17 @@
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--log_level')
+args = parser.parse_args()
+log_level = args.log_level.upper() if args.log_level else 'DEBUG'
+
 import logging
 
-# logging.basicConfig(
-#         level=logging.WARN,
-#         format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
-# )
+logging.basicConfig(
+        # level=logging.WARN,
+        level=getattr(logging, log_level),
+        format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
+)
 
 import parser
 import tempfile
