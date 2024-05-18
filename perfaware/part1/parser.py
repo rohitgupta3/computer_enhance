@@ -361,9 +361,20 @@ def parse_next_group(some_bytes):
     # TODO: handle not only add immed_rm opcode
     elif first_bits[:6] == '100000':
         return 'add ' + parse_immed_rm_operands(some_bytes)
+    # immediate to accumulator 'add'
+    elif first_bits[:7] == '0000010':
+        # TODO: not sure if this opcode is specific to `add`, in which case
+        # should name the parsing function with 'add' in it
+        return 'add ' + parse_immed_acc_operands(some_bytes)
     else:
         raise ValueError(f'Bytes not supported: {bytes_repr(some_bytes)}')
         # raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
+
+
+def parse_immed_acc_operands(some_bytes):
+    immediate_s = get_int_string_from_bytes(some_bytes[1:])
+    return f'ax, {immediate_s}'
+
 
 def parse_immed_rm_operands(some_bytes):
     first_byte = some_bytes[0]
@@ -463,11 +474,3 @@ def decode_executable(filename):
     ]
     return lines
 
-if __name__ == '__main__':
-    # FILENAME = 'listing_0037_single_register_mov'
-    # FILENAME = 'listing_0038_many_register_mov'
-    # FILENAME = 'listing_0039_more_movs'
-    FILENAME = sys.argv[1]
-    lines = decode_executable(FILENAME)
-    for line in lines:
-        logging.info(line)
