@@ -45,7 +45,8 @@ def test_decode_executable_bin(filename):
         assert reconstructed_contents == original_contents
 
 def test_decode_executable_asm(original_executable_filename, asm_ground_truth_filename):
-    lines = parser.decode_executable(original_executable_filename, num_lines=68)
+    # lines = parser.decode_executable(original_executable_filename, num_lines=68)
+    lines = parser.decode_executable(original_executable_filename)
     logging.info(f'Disassembled {original_executable_filename}: {lines}')
 
     # with open(f'{original_executable_filename}.asm', mode='r') as original_asm_file:
