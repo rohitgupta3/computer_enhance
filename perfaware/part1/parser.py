@@ -471,7 +471,7 @@ def parse_immed_rm_operands(some_bytes):
 
 
 
-def decode_machine_code(file_contents, num_lines):
+def decode_machine_code(file_contents, num_lines=None):
     lines = []
     line_no = 0
     while True:
@@ -495,7 +495,7 @@ def decode_machine_code(file_contents, num_lines):
 
     return lines
 
-def decode_executable(filename, num_lines):
+def decode_executable(filename, num_lines=None):
     # TODO: relative path
     with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{filename}', mode='r+b') as fd:
         file_contents = fd.read()
@@ -503,7 +503,7 @@ def decode_executable(filename, num_lines):
     lines = decode_machine_code(file_contents, num_lines)
     return lines
 
-def decode_executable_polished(filename, num_lines):
+def decode_executable_polished(filename, num_lines=None):
     lines = decode_executable(filename, num_lines)
     lines_with_polish = [
         f'; {filename} disassembly:',
