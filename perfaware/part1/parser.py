@@ -15,6 +15,9 @@ ADD_REGMEM_REGMEM_PREFIX = '000000'
 SUB_REGMEM_REGMEM_PREFIX = '001010'
 CMP_REGMEM_REG_PREFIX    = '001110'
 
+###
+# Utility functions / bit & byte wrangling
+
 def bytes_repr(some_bytes):
     return " ".join([format(some_byte, '08b') for some_byte in some_bytes])
 
@@ -24,6 +27,14 @@ def byte_to_bitstring(some_int):
     eight_bits = byte_to_bitstring(some_int)
     """
     return format(some_int, '08b')
+
+def get_int_string_from_bytes(displacement_bytes):
+    int_value_i: int = int.from_bytes(displacement_bytes, byteorder='little')
+    int_value_s: str = str(int_value_i)
+    return int_value_s
+
+###
+# Lookups
 
 def get_readable_reg(reg, width_bit):
     if reg == '000' and width_bit == '0':
@@ -58,6 +69,38 @@ def get_readable_reg(reg, width_bit):
         return 'bh'
     elif reg == '111' and width_bit == '1':
         return 'di'
+
+def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
+    if r_slash_m_bits_string == '000':
+        core_string = 'bx + si'
+    if r_slash_m_bits_string == '001':
+        core_string = 'bx + di'
+    if r_slash_m_bits_string == '010':
+        core_string = 'bp + si'
+    if r_slash_m_bits_string == '011':
+        core_string = 'bp + di'
+    if r_slash_m_bits_string == '100':
+        core_string = 'si'
+    if r_slash_m_bits_string == '101':
+        core_string = 'di'
+    if r_slash_m_bits_string == '110' and mod != '00':
+        core_string = 'bp'
+    if r_slash_m_bits_string == '111':
+        core_string = 'bx'
+
+    if mod == '00':
+        return f'[{core_string}]'
+
+    int_string_displacement = get_int_string_from_bytes(displacement_bytes)
+
+    if r_slash_m_bits_string == '110' and mod == '00':
+        return f'[{int_string_displacement}]'
+
+    if int_string_displacement == '0':
+        return f'[{core_string}]'
+    else:
+        return f'[{core_string} + {int_string_displacement}]'
+
 
 
 ###########
@@ -125,7 +168,7 @@ def get_more_bytes_needed(two_bytes):
           first_bits[:7] == '0010110'):
         logging.debug('this is an immediate-to-register mov')
         return get_more_bytes_row3(two_bytes)
-    # TODO: handle not only add immed_rm opcode
+    # TODO: handle not only 'add' immed_rm opcode
     elif first_bits[:6] == '100000':
         return get_more_bytes_immed_rm(two_bytes)
     else:
@@ -185,44 +228,6 @@ def get_more_bytes_row3(two_bytes):
     else:
         raise ValueError(f'in `get_more_bytes_row3 with first_bits: {first_bits}')
     return 1 if width_bit == '1' else 0
-
-
-def get_int_string_from_bytes(displacement_bytes):
-    int_value_i: int = int.from_bytes(displacement_bytes, byteorder='little')
-    int_value_s: str = str(int_value_i)
-    return int_value_s
-
-
-def get_readable_eff_add(r_slash_m_bits_string, mod, displacement_bytes):
-    if r_slash_m_bits_string == '000':
-        core_string = 'bx + si'
-    if r_slash_m_bits_string == '001':
-        core_string = 'bx + di'
-    if r_slash_m_bits_string == '010':
-        core_string = 'bp + si'
-    if r_slash_m_bits_string == '011':
-        core_string = 'bp + di'
-    if r_slash_m_bits_string == '100':
-        core_string = 'si'
-    if r_slash_m_bits_string == '101':
-        core_string = 'di'
-    if r_slash_m_bits_string == '110' and mod != '00':
-        core_string = 'bp'
-    if r_slash_m_bits_string == '111':
-        core_string = 'bx'
-
-    if mod == '00':
-        return f'[{core_string}]'
-
-    int_string_displacement = get_int_string_from_bytes(displacement_bytes)
-
-    if r_slash_m_bits_string == '110' and mod == '00':
-        return f'[{int_string_displacement}]'
-
-    if int_string_displacement == '0':
-        return f'[{core_string}]'
-    else:
-        return f'[{core_string} + {int_string_displacement}]'
 
 
 # def decode_memory_mov(
@@ -386,8 +391,21 @@ def parse_immed_rm_operands(some_bytes):
         asm = f'{register_name}, {immediate_s}'
         logging.debug(asm)
         return asm
+    # Memory mode, no displacement
+    elif mod == '00' and r_slash_m != '110':
+        # TODO: get destination (memory address)
+        effective_address = get_readable_eff_add(
+            r_slash_m_bits_string=r_slash_m,
+            mod=mod,
+            displacement_bytes=None # TODO: check
+        )
+        immediate_s = get_int_string_from_bytes(some_bytes[2:])
+    # Memory mode, 16-bit displacement (special case of mod '00')
+    elif mod == '00' and r_slash_m == '110':
+        pass
+    # TODO: do others
     else:
-        logging.debug('this is memory operation')
+        raise NotImplementedError(f'Haven\'t dealt with {bytes_repr(some_bytes)}')
         # asm = decode_memory_operands(destination_bit, width_bit, reg, r_slash_m, mod, some_bytes[2:])
 
     return asm
@@ -398,7 +416,9 @@ def decode_machine_code(file_contents):
     lines = []
     line_no = 0
     while True:
-        # breakpoint()
+        if line_no == 15:
+            breakpoint()
+            # pass
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]

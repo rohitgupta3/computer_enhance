@@ -132,12 +132,28 @@ class Listing0040DecodeTest(unittest.TestCase):
         Modeled after the first new instruction pattern in listing 41
         """
         opcode = '100000'
-        s_bit = '1'
+        s_bit = '0' # Don't sign extend if you need 16 bits
         w_bit = '1'
-        mod = '11' # no displacement
+        mod = '11' # no displacement (register mode)
         reg_slash_m = '110' # not the point
 
         instruction_bits = f'{opcode}{s_bit}{w_bit}{mod}000{reg_slash_m}'
         instruction_bytes = bits_to_bytes(instruction_bits)
         self.assertEqual(parser.get_more_bytes_needed(instruction_bytes), 2)
+
+    def test_disp_bytes_can_be_none(self):
+        """
+        If mod is '00' and R/M is not the special case, we shouldn't
+        need to pass the displacement bytes since there is no displacement
+        """
+        mod = '00'
+        r_slash_m_bits_string = '111'
+        effective_address = parser.get_readable_eff_add(
+            r_slash_m_bits_string=r_slash_m_bits_string,
+            mod=mod,
+            displacement_bytes=None
+        )
+        self.assertEqual(effective_address, '[bx]')
+
+
 
