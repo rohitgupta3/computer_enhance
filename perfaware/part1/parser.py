@@ -394,12 +394,25 @@ def parse_immed_rm_operands(some_bytes):
     # Memory mode, no displacement
     elif mod == '00' and r_slash_m != '110':
         # TODO: get destination (memory address)
+        data_bytes = some_bytes[2:]
         effective_address = get_readable_eff_add(
             r_slash_m_bits_string=r_slash_m,
             mod=mod,
             displacement_bytes=None
         )
-        immediate_s = get_int_string_from_bytes(some_bytes[2:])
+        immediate_s = get_int_string_from_bytes(data_bytes)
+        immediate_size = 'word' if w_bit == '1' else 'byte'
+        asm = f'{immediate_size} {effective_address}, {immediate_s}'
+    # Memory mode, 16-bit displacement
+    elif mod == '10':
+        displacement_bytes = some_bytes[2:4]
+        data_bytes = some_bytes[4:]
+        effective_address = get_readable_eff_add(
+            r_slash_m_bits_string=r_slash_m,
+            mod=mod,
+            displacement_bytes=displacement_bytes
+        )
+        immediate_s = get_int_string_from_bytes(data_bytes)
         immediate_size = 'word' if w_bit == '1' else 'byte'
         asm = f'{immediate_size} {effective_address}, {immediate_s}'
     # Memory mode, 16-bit displacement (special case of mod '00')
