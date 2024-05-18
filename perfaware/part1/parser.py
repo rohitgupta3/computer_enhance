@@ -400,7 +400,8 @@ def parse_immed_rm_operands(some_bytes):
             displacement_bytes=None
         )
         immediate_s = get_int_string_from_bytes(some_bytes[2:])
-        asm = f'{effective_address}, {immediate_s}'
+        immediate_size = 'word' if w_bit == '1' else 'byte'
+        asm = f'{immediate_size} {effective_address}, {immediate_s}'
     # Memory mode, 16-bit displacement (special case of mod '00')
     elif mod == '00' and r_slash_m == '110':
         pass
