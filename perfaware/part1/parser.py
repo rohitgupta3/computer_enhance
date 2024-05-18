@@ -471,12 +471,14 @@ def parse_immed_rm_operands(some_bytes):
 
 
 
-def decode_machine_code(file_contents):
+def decode_machine_code(file_contents, num_lines):
     lines = []
     line_no = 0
     while True:
         logging.info("New line")
         if len(file_contents) == 0:
+            break
+        if num_lines and len(lines) == num_lines:
             break
         if line_no == 64:
             # breakpoint()
@@ -493,16 +495,20 @@ def decode_machine_code(file_contents):
 
     return lines
 
-def decode_executable(filename):
+def decode_executable(filename, num_lines):
     # TODO: relative path
     with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{filename}', mode='r+b') as fd:
         file_contents = fd.read()
 
-    lines = decode_machine_code(file_contents)
-    lines = [
+    lines = decode_machine_code(file_contents, num_lines)
+    return lines
+
+def decode_executable_polished(filename, num_lines):
+    lines = decode_executable(filename, num_lines)
+    lines_with_polish = [
         f'; {filename} disassembly:',
         'bits 16',
         *lines
     ]
-    return lines
+    return lines_with_polish
 
