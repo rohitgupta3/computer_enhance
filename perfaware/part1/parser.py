@@ -397,7 +397,7 @@ def parse_immed_rm_operands(some_bytes):
         effective_address = get_readable_eff_add(
             r_slash_m_bits_string=r_slash_m,
             mod=mod,
-            displacement_bytes=None # TODO: check
+            displacement_bytes=None
         )
         immediate_s = get_int_string_from_bytes(some_bytes[2:])
     # Memory mode, 16-bit displacement (special case of mod '00')
