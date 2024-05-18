@@ -8,8 +8,8 @@ log_level = args.log_level.upper() if args.log_level else 'DEBUG'
 import logging
 
 logging.basicConfig(
-        level=getattr(logging, log_level),
-        format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
+   level=getattr(logging, log_level),
+   format="%(asctime)s %(levelname)1.1s %(module)s:%(lineno)d - %(message)s",
 )
 
 import parser
