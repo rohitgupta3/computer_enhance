@@ -384,6 +384,14 @@ def parse_next_group(some_bytes):
         return 'add ' + parse_immed_acc_operands(some_bytes)
     elif first_bits[:7] == '0010110':
         return 'sub ' + parse_immed_acc_operands(some_bytes)
+    # Messy, not operating at one level of abstraction here
+    # cmp immediate with accumulator
+    elif first_bits[:7] == '0011110':
+        data_byte = some_bytes[1:]
+        immediate_s = get_int_string_from_bytes(data_byte)
+        w_bit = first_bits[7]
+        accum_reg = 'ax' if w_bit == '01' else 'al'
+        return f'cmp {accum_reg}, {immediate_s}'
     else:
         raise NotImplementedError(f'Bytes not supported: {bytes_repr(some_bytes)}')
         # raise NotImplementedError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
