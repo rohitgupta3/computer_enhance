@@ -38,8 +38,16 @@ def test_decode_executable(filename):
         assert reconstructed_contents == original_contents
 
 
-# test_decode_executable('listing_0037_single_register_mov')
-# test_decode_executable('listing_0038_many_register_mov')
-# test_decode_executable('listing_0039_more_movs')
-test_decode_executable('listing_0041_add_sub_cmp_jnz')
 
+if __name__ == '__main__':
+#     # FILENAME = 'listing_0037_single_register_mov'
+#     # FILENAME = 'listing_0038_many_register_mov'
+#     # FILENAME = 'listing_0039_more_movs'
+#     FILENAME = sys.argv[1]
+#     lines = decode_executable(FILENAME)
+#     for line in lines:
+#         logging.info(line)
+    # test_decode_executable('listing_0037_single_register_mov')
+    # test_decode_executable('listing_0038_many_register_mov')
+    # test_decode_executable('listing_0039_more_movs')
+    test_decode_executable('listing_0041_add_sub_cmp_jnz')

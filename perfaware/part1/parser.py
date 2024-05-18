@@ -431,9 +431,10 @@ def decode_machine_code(file_contents):
     lines = []
     line_no = 0
     while True:
+        logging.info("New line")
         if line_no == 15:
-            breakpoint()
-            # pass
+            # breakpoint()
+            pass
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]
@@ -461,12 +462,6 @@ def decode_executable(filename):
         *lines
     ]
     return lines
-
-# def parse_regmem_regmem():
-#     pass
-# 
-# def parse_machine_code(machine_code):
-#     parse_regmem_regmem()
 
 if __name__ == '__main__':
     # FILENAME = 'listing_0037_single_register_mov'
