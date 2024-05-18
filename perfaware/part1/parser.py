@@ -344,17 +344,20 @@ def parse_next_group(some_bytes):
     first_byte = some_bytes[0]
     first_bits = byte_to_bitstring(first_byte)
 
-    if first_bits[0:6] == '100010':
+    if first_bits[0:6] == MOV_REGMEM_REGMEM_PREFIX:
         logging.debug('this is a register-to-register or memory-to-register or register-to-memory mov')
         # TODO: don't love the naming
         # return parse_100010(some_bytes)
         return 'mov ' + parse_rmrm_operands(some_bytes)
-    elif first_bits[0:6] == '000000':
+    elif first_bits[0:6] == ADD_REGMEM_REGMEM_PREFIX:
         logging.debug('this is a reg/memory with register to either add')
         return 'add ' + parse_rmrm_operands(some_bytes)
-    elif first_bits[0:6] == '001010':
+    elif first_bits[0:6] == SUB_REGMEM_REGMEM_PREFIX:
         logging.debug('this is a reg/memory and register to either sub')
         return 'sub ' + parse_rmrm_operands(some_bytes)
+    elif first_bits[0:6] == CMP_REGMEM_REG_PREFIX:
+        logging.debug('this is a reg/memory and register to either cmp')
+        return 'cmp ' + parse_rmrm_operands(some_bytes)
     elif first_bits[0:4] == '1011':
         logging.debug('this is an immediate-to-register mov')
         return parse_1011(some_bytes)
@@ -464,6 +467,8 @@ def decode_machine_code(file_contents):
         logging.info("New line")
         if len(file_contents) == 0:
             break
+        if line_no == 48:
+            breakpoint()
         two_bytes = file_contents[:2]
         file_contents = file_contents[2:]
         more_bytes_needed = get_more_bytes_needed(two_bytes)
