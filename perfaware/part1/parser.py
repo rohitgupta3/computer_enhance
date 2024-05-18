@@ -172,8 +172,8 @@ def get_more_bytes_needed(two_bytes):
     elif first_bits[:6] == '100000':
         return get_more_bytes_immed_rm(two_bytes)
     else:
-        # raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
-        raise ValueError(f'Bytes not supported: {bytes_repr(two_bytes)}')
+        # raise NotImplementedError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
+        raise NotImplementedError(f'Bytes not supported: {bytes_repr(two_bytes)}')
 
 def get_more_bytes_immed_rm(two_bytes):
     first_byte = two_bytes[0]
@@ -360,20 +360,39 @@ def parse_next_group(some_bytes):
         return parse_1011(some_bytes)
     # TODO: handle not only add immed_rm opcode
     elif first_bits[:6] == '100000':
-        return 'add ' + parse_immed_rm_operands(some_bytes)
+        second_byte = some_bytes[1]
+        second_bits = byte_to_bitstring(second_byte)
+        pseudo_reg = second_bits[2:5]
+        operand = None
+        if pseudo_reg == '000':
+            operand = 'add'
+        elif pseudo_reg == '101':
+            operand = 'sub'
+        elif pseudo_reg == '111':
+            operand = 'cmp'
+        else:
+            raise NotImplementedError(f'Bytes not supported: {bytes_repr(some_bytes)}')
+        return f'{operand} {parse_immed_rm_operands(some_bytes)}'
     # immediate to accumulator 'add'
     elif first_bits[:7] == '0000010':
-        # TODO: not sure if this opcode is specific to `add`, in which case
-        # should name the parsing function with 'add' in it
         return 'add ' + parse_immed_acc_operands(some_bytes)
+    elif first_bits[:7] == '0010110':
+        return 'sub ' + parse_immed_acc_operands(some_bytes)
     else:
-        raise ValueError(f'Bytes not supported: {bytes_repr(some_bytes)}')
-        # raise ValueError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
+        raise NotImplementedError(f'Bytes not supported: {bytes_repr(some_bytes)}')
+        # raise NotImplementedError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
 
 
+# TODO: a little confused about accumulator. Thought it's always
+# ax, but think if we're moving 8 bits then it's al
 def parse_immed_acc_operands(some_bytes):
+    first_byte = some_bytes[0]
+    first_bits = byte_to_bitstring(first_byte)
+    w_bit = first_bits[7]
+    accumulator_register = 'ax' if w_bit == '1' else 'al'
+
     immediate_s = get_int_string_from_bytes(some_bytes[1:])
-    return f'ax, {immediate_s}'
+    return f'{accumulator_register}, {immediate_s}'
 
 
 def parse_immed_rm_operands(some_bytes):
@@ -443,9 +462,6 @@ def decode_machine_code(file_contents):
     line_no = 0
     while True:
         logging.info("New line")
-        if line_no == 15:
-            # breakpoint()
-            pass
         if len(file_contents) == 0:
             break
         two_bytes = file_contents[:2]
@@ -454,14 +470,13 @@ def decode_machine_code(file_contents):
         remaining_bytes = file_contents[:more_bytes_needed]
         file_contents = file_contents[more_bytes_needed:]
         asm = parse_next_group(two_bytes + remaining_bytes)
-        logging.info(f'asm, line {line_no}: {asm}')
+        print(f'asm, line {line_no}: {asm}')
         lines.append(asm)
         line_no += 1
 
     return lines
 
 def decode_executable(filename):
-    # breakpoint()
     # TODO: relative path
     with open(f'/Users/rgmbp/projects/computer_enhance/perfaware/part1/{filename}', mode='r+b') as fd:
         file_contents = fd.read()
