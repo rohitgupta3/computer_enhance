@@ -172,6 +172,8 @@ def get_more_bytes_needed(two_bytes):
     # TODO: handle not only 'add' immed_rm opcode
     elif first_bits[:6] == '100000':
         return get_more_bytes_immed_rm(two_bytes)
+    elif first_bits[:7] == '0011110':
+        return 0
     else:
         # raise NotImplementedError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
         raise NotImplementedError(f'Bytes not supported: {bytes_repr(two_bytes)}')
