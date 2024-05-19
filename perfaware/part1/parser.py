@@ -172,8 +172,11 @@ def get_more_bytes_needed(two_bytes):
     # TODO: handle not only 'add' immed_rm opcode
     elif first_bits[:6] == '100000':
         return get_more_bytes_immed_rm(two_bytes)
+    # I think the 8086 manual has a mistake here (this is cmp immediate w/accumulator)
+    # It says the data is only one byte but I think it's two if the 'w_bit' is '1'
     elif first_bits[:7] == '0011110':
-        return 0
+        w_bit = first_bits[7]
+        return 1 if w_bit == '1' else 0
     else:
         # raise NotImplementedError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
         raise NotImplementedError(f'Bytes not supported: {bytes_repr(two_bytes)}')
@@ -390,7 +393,7 @@ def parse_next_group(some_bytes):
         data_byte = some_bytes[1:]
         immediate_s = get_int_string_from_bytes(data_byte)
         w_bit = first_bits[7]
-        accum_reg = 'ax' if w_bit == '01' else 'al'
+        accum_reg = 'ax' if w_bit == '1' else 'al'
         return f'cmp {accum_reg}, {immediate_s}'
     else:
         raise NotImplementedError(f'Bytes not supported: {bytes_repr(some_bytes)}')
@@ -490,9 +493,9 @@ def decode_machine_code(file_contents, num_lines=None):
             break
         if num_lines and len(lines) == num_lines:
             break
-        if line_no == 64:
-            # breakpoint()
-            pass
+        if line_no == 69:
+            breakpoint()
+            # pass
         two_bytes = file_contents[:2]
         file_contents = file_contents[2:]
         more_bytes_needed = get_more_bytes_needed(two_bytes)
