@@ -10,10 +10,77 @@ logging.basicConfig(
 import sys
 
 # First in each group
-MOV_REGMEM_REGMEM_PREFIX = '100010'
-ADD_REGMEM_REGMEM_PREFIX = '000000'
-SUB_REGMEM_REGMEM_PREFIX = '001010'
-CMP_REGMEM_REG_PREFIX    = '001110'
+MOV_RM_RM_OPCODE = '100010'
+ADD_RM_RM_OPCODE = '000000'
+SUB_RM_RM_OPCODE = '001010'
+CMP_RM_R_OPCODE    = '001110'
+
+# Conditional jump patterns
+JNZ_OPCODE = '01110101'
+JE_OPCODE = '01110100'
+JL_OPCODE = '01111100'
+JB_OPCODE = '01110010'
+JBE_OPCODE = '01110110'
+JP_OPCODE = '01111010'
+JO_OPCODE = '01110000'
+JS_OPCODE = '01111000'
+JNE_OPCODE = '01110101'
+JNL_OPCODE = '01111101'
+JG_OPCODE = '01111111'
+JNB_OPCODE = '01110011'
+JA_OPCODE = '01110111'
+JNP_OPCODE = '01111011'
+JNO_OPCODE = '01110001'
+JNS_OPCODE = '01111001'
+LOOP_OPCODE = '11100010'
+LOOPZ_OPCODE = '11100001'
+JCXZ_OPCODE = '11100011'
+
+COND_JUMP_OPCODES = [
+    JNZ_OPCODE,
+    JE_OPCODE,
+    JL_OPCODE,
+    JB_OPCODE,
+    JBE_OPCODE,
+    JP_OPCODE,
+    JO_OPCODE,
+    JS_OPCODE,
+    JNE_OPCODE,
+    JNL_OPCODE,
+    JG_OPCODE,
+    JNB_OPCODE,
+    JA_OPCODE,
+    JNP_OPCODE,
+    JNO_OPCODE,
+    JNS_OPCODE,
+    LOOP_OPCODE,
+    LOOPZ_OPCODE,
+    JCXZ_OPCODE
+]
+
+# jnz test_label1
+# label:
+# je label
+# jl label
+# jle label
+# jb label
+# jbe label
+# jp label
+# jo label
+# js label
+# jne label
+# jnl label
+# jg label
+# jnb label
+# ja label
+# jnp label
+# jno label
+# jns label
+# loop label
+# loopz label
+# loopnz label
+# jcxz label
+
 
 ###
 # Utility functions / bit & byte wrangling
@@ -156,10 +223,10 @@ def get_more_bytes_needed(two_bytes):
 
     # if first_bits[0:6] == '100010':
     if first_bits[:6] in [
-        MOV_REGMEM_REGMEM_PREFIX,
-        ADD_REGMEM_REGMEM_PREFIX,
-        SUB_REGMEM_REGMEM_PREFIX,
-        CMP_REGMEM_REG_PREFIX
+        MOV_RM_RM_OPCODE,
+        ADD_RM_RM_OPCODE,
+        SUB_RM_RM_OPCODE,
+        CMP_RM_R_OPCODE
     ]:
         logging.debug(f'first_bits: {first_bits}, register-to-register / memory-to-register / register-to-memory')
         return get_more_bytes_needed_rmrm(two_bytes)
@@ -177,6 +244,8 @@ def get_more_bytes_needed(two_bytes):
     elif first_bits[:7] == '0011110':
         w_bit = first_bits[7]
         return 1 if w_bit == '1' else 0
+    elif first_bits in COND_JUMP_OPCODES:
+        return 0
     else:
         # raise NotImplementedError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
         raise NotImplementedError(f'Bytes not supported: {bytes_repr(two_bytes)}')
@@ -350,18 +419,18 @@ def parse_next_group(some_bytes):
     first_byte = some_bytes[0]
     first_bits = byte_to_bitstring(first_byte)
 
-    if first_bits[0:6] == MOV_REGMEM_REGMEM_PREFIX:
+    if first_bits[0:6] == MOV_RM_RM_OPCODE:
         logging.debug('this is a register-to-register or memory-to-register or register-to-memory mov')
         # TODO: don't love the naming
         # return parse_100010(some_bytes)
         return 'mov ' + parse_rmrm_operands(some_bytes)
-    elif first_bits[0:6] == ADD_REGMEM_REGMEM_PREFIX:
+    elif first_bits[0:6] == ADD_RM_RM_OPCODE:
         logging.debug('this is a reg/memory with register to either add')
         return 'add ' + parse_rmrm_operands(some_bytes)
-    elif first_bits[0:6] == SUB_REGMEM_REGMEM_PREFIX:
+    elif first_bits[0:6] == SUB_RM_RM_OPCODE:
         logging.debug('this is a reg/memory and register to either sub')
         return 'sub ' + parse_rmrm_operands(some_bytes)
-    elif first_bits[0:6] == CMP_REGMEM_REG_PREFIX:
+    elif first_bits[0:6] == CMP_RM_R_OPCODE:
         logging.debug('this is a reg/memory and register to either cmp')
         return 'cmp ' + parse_rmrm_operands(some_bytes)
     elif first_bits[0:4] == '1011':
@@ -395,10 +464,62 @@ def parse_next_group(some_bytes):
         w_bit = first_bits[7]
         accum_reg = 'ax' if w_bit == '1' else 'al'
         return f'cmp {accum_reg}, {immediate_s}'
+    elif first_bits in COND_JUMP_OPCODES:
+        return parse_conditional_jump(some_bytes)
     else:
         raise NotImplementedError(f'Bytes not supported: {bytes_repr(some_bytes)}')
         # raise NotImplementedError(f'{two_bytes} not supported. bits: {format(two_bytes[0], "08b") + format(two_bytes[1], "08b")}')
 
+
+def parse_conditional_jump(some_bytes):
+    first_byte = some_bytes[0]
+    first_bits = byte_to_bitstring(first_byte)
+
+    address = get_int_string_from_bytes(some_bytes[1:])
+
+    jmp_instruction = None
+    if first_bits == JNZ_OPCODE:
+        jmp_instruction = 'jnz'
+    elif first_bits == JE_OPCODE:
+        jmp_instruction = 'je'
+    elif first_bits == JL_OPCODE:
+        jmp_instruction = 'jl'
+    elif first_bits == JB_OPCODE:
+        jmp_instruction = 'jb'
+    elif first_bits == JBE_OPCODE:
+        jmp_instruction = 'jbe'
+    elif first_bits == JP_OPCODE:
+        jmp_instruction = 'jp'
+    elif first_bits == JO_OPCODE:
+        jmp_instruction = 'jo'
+    elif first_bits == JS_OPCODE:
+        jmp_instruction = 'js'
+    elif first_bits == JNE_OPCODE:
+        jmp_instruction = 'jne'
+    elif first_bits == JNL_OPCODE:
+        jmp_instruction = 'jnl'
+    elif first_bits == JG_OPCODE:
+        jmp_instruction = 'jg'
+    elif first_bits == JNB_OPCODE:
+        jmp_instruction = 'jnb'
+    elif first_bits == JA_OPCODE:
+        jmp_instruction = 'ja'
+    elif first_bits == JNP_OPCODE:
+        jmp_instruction = 'jnp'
+    elif first_bits == JNO_OPCODE:
+        jmp_instruction = 'jno'
+    elif first_bits == JNS_OPCODE:
+        jmp_instruction = 'jns'
+    elif first_bits == LOOP_OPCODE:
+        jmp_instruction = 'loop'
+    elif first_bits == LOOPZ_OPCODE:
+        jmp_instruction = 'loopz'
+    elif first_bits == JCXZ_OPCODE:
+        jmp_instruction = 'jcxz'
+    else:
+        raise ValueError(f'Shouldn\'t be in jmp function, some_bytes: {bytes_repr(some_bytes)}')
+    
+    return f'{jmp_instruction} {address}'
 
 # TODO: a little confused about accumulator. Thought it's always
 # ax, but think if we're moving 8 bits then it's al
@@ -494,8 +615,8 @@ def decode_machine_code(file_contents, num_lines=None):
         if num_lines and len(lines) == num_lines:
             break
         if line_no == 69:
-            breakpoint()
-            # pass
+            # breakpoint()
+            pass
         two_bytes = file_contents[:2]
         file_contents = file_contents[2:]
         more_bytes_needed = get_more_bytes_needed(two_bytes)
