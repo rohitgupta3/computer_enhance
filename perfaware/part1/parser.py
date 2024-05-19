@@ -19,6 +19,7 @@ CMP_RM_R_OPCODE    = '001110'
 JNZ_OPCODE = '01110101'
 JE_OPCODE = '01110100'
 JL_OPCODE = '01111100'
+JLE_OPCODE = '01111110'
 JB_OPCODE = '01110010'
 JBE_OPCODE = '01110110'
 JP_OPCODE = '01111010'
@@ -34,12 +35,14 @@ JNO_OPCODE = '01110001'
 JNS_OPCODE = '01111001'
 LOOP_OPCODE = '11100010'
 LOOPZ_OPCODE = '11100001'
+LOOPNZ_OPCODE = '11100000'
 JCXZ_OPCODE = '11100011'
 
 COND_JUMP_OPCODES = [
     JNZ_OPCODE,
     JE_OPCODE,
     JL_OPCODE,
+    JLE_OPCODE,
     JB_OPCODE,
     JBE_OPCODE,
     JP_OPCODE,
@@ -55,6 +58,7 @@ COND_JUMP_OPCODES = [
     JNS_OPCODE,
     LOOP_OPCODE,
     LOOPZ_OPCODE,
+    LOOPNZ_OPCODE,
     JCXZ_OPCODE
 ]
 
@@ -484,6 +488,8 @@ def parse_conditional_jump(some_bytes):
         jmp_instruction = 'je'
     elif first_bits == JL_OPCODE:
         jmp_instruction = 'jl'
+    elif first_bits == JLE_OPCODE:
+        jmp_instruction = 'jle'
     elif first_bits == JB_OPCODE:
         jmp_instruction = 'jb'
     elif first_bits == JBE_OPCODE:
@@ -514,6 +520,8 @@ def parse_conditional_jump(some_bytes):
         jmp_instruction = 'loop'
     elif first_bits == LOOPZ_OPCODE:
         jmp_instruction = 'loopz'
+    elif first_bits == LOOPNZ_OPCODE:
+        jmp_instruction = 'loopnz'
     elif first_bits == JCXZ_OPCODE:
         jmp_instruction = 'jcxz'
     else:
