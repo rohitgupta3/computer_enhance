@@ -45,7 +45,6 @@ def test_decode_executable_bin(filename):
         assert reconstructed_contents == original_contents
 
 def test_decode_executable_asm(original_executable_filename, asm_ground_truth_filename):
-    breakpoint()
     lines = parser.decode_executable(original_executable_filename)
     # lines = parser.decode_executable(original_executable_filename)
     logging.info(f'Disassembled {original_executable_filename}: {lines}')
@@ -56,7 +55,6 @@ def test_decode_executable_asm(original_executable_filename, asm_ground_truth_fi
 
     original_asm = original_asm.split('\n')
     for idx, (original_line, disassembled_line) in enumerate(zip(original_asm, lines)):
-        # breakpoint()
         # `idx` list below captures ones where 226 == -30, `bp` == `bp+0`, and such
         # if idx not in [22, 29]:
         if original_line.replace(' ', '') != disassembled_line.replace(' ', ''):
