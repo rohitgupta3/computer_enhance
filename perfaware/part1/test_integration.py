@@ -46,7 +46,7 @@ def test_decode_executable_bin(filename):
 
 def test_decode_executable_asm(original_executable_filename, asm_ground_truth_filename):
     breakpoint()
-    lines = parser.decode_executable(original_executable_filename, num_lines=71)
+    lines = parser.decode_executable(original_executable_filename)
     # lines = parser.decode_executable(original_executable_filename)
     logging.info(f'Disassembled {original_executable_filename}: {lines}')
 
